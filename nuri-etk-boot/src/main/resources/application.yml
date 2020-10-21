@@ -1,0 +1,49 @@
+server:
+  port: 8088
+  servlet:
+    context-path: /etk
+
+spring:
+  profiles:
+    active: ${activeprofile:local}
+  application:
+    name: etkMainApp
+  main:
+    allow-bean-definition-overriding: true
+
+#mybatis config
+mybatis:
+  config-location: classpath:mybatis/mariadb/MapperConfig.xml
+---
+#jdbc
+spring:
+  profiles: local
+  datasource:
+    hikari:
+      dirver-class-name: oracle.jdbc.OracleDriver
+      jdbc-url: jdbc:oracle:thin:@172.16.10.140:1521:ORCL
+      username: ${jdbcuser:aimir}
+      password: ${jdbcpass:aimir}
+      idleTimeout: 10000
+      connection-timeout: 10000
+      validation-timeout: 10000
+      maxLifetime: 580000
+      maximumPoolSize: 30
+      minimumIdle: 10
+
+---
+#jdbc
+spring:
+  profiles: default
+  datasource:
+    hikari:
+      dirver-class-name: org.mariadb.jdbc.Driver
+      jdbc-url: ${jdbcurl}
+      username: ${jdbcuser}
+      password: ${jdbcpass}
+      idleTimeout: 10000
+      connection-timeout: 10000
+      validation-timeout: 10000
+      maxLifetime: 580000
+      maximumPoolSize: 30
+      minimumIdle: 10
