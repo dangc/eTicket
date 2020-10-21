@@ -1,0 +1,14 @@
+/.idea/
+/*.iml
+/.metadata/
+/.recommenders/
+/logs/
+*/.project
+*/.classpath
+*/.factorypath
+*/bin/
+*/log/
+*/logs/
+*/target/
+*/.settings
+*/*.iml
