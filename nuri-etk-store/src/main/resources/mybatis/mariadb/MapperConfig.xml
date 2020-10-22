@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <properties>
+        <property name="prop.dt" value="%Y-%m-%d %H:%i:%s"></property>
+        <property name="prop.small.dt" value="%Y-%m-%d %H:%i"></property>
+        <property name="prop.date" value="%Y-%m-%d"></property>
+        <property name="prop.time" value="%H:%i:%s"></property>
+        <property name="prop.dt.plain" value="%Y%m%d%H%i%s"></property>
+    </properties>
+
+    <typeAliases>
+        <typeAlias alias="dcuJpo" type="com.nuri.etk.store.jpo.DcuJpo"/>
+        <typeAlias alias="meterJpo" type="com.nuri.etk.store.jpo.MeterJpo"/>
+    </typeAliases>
+
+    <mappers>
+        <!--<mapper resource="mybatis/mariadb/DcuMapper.xml" />-->
+        <mapper resource="mybatis/mariadb/MeterMapper.xml" />
+    </mappers>
+
+</configuration>

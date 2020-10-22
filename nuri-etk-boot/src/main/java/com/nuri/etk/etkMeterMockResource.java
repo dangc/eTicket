@@ -4,17 +4,26 @@ import com.nuri.etk.entity.API.Meter;
 import com.nuri.etk.entity.API.RegisterInfoByMeter;
 import com.nuri.etk.entity.API.TargetByMeter;
 import com.nuri.etk.facade.flow.MeterFlowFacade;
+import com.nuri.etk.spec.MeterService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin("*")
 @Api(description = "미터 정보 Resource")
 @RequestMapping("/v2.0")
 public class etkMeterMockResource implements MeterFlowFacade {
+    private MeterService meterService;
+
+    public etkMeterMockResource(MeterService meterService) {
+        this.meterService = meterService;
+    }
 
     @Override
     @ApiOperation(value = "미터 조회", notes = "미터 정보 요청 API")
@@ -22,9 +31,10 @@ public class etkMeterMockResource implements MeterFlowFacade {
             @ApiImplicitParam(name = "meterId", value = "미터 시리얼 번호", required = true, dataType = "string", paramType = "path", defaultValue = "")
     })
     @GetMapping(value={"/meters/{meterId}"})
-    public Meter getMeterInfo(@PathVariable String meterId){
+    public List<Meter> getMeterInfo(@PathVariable String meterId){
         System.out.println("######## getMeterInfo parameter {meterId} : " + meterId + " ########");
-        return Meter.getTargetByMeter(meterId);
+//        return Meter.getTargetByMeter(meterId);
+        return meterService.getMeterInfo(meterId);
     }
 
     @Override
