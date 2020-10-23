@@ -1,0 +1,12 @@
+server:
+  port: 8088
+  servlet:
+    context-path: /etk
+
+spring:
+  profiles:
+    active: default
+  application:
+    name: EvendingMockApp
+  main:
+    allow-bean-definition-overriding: true
