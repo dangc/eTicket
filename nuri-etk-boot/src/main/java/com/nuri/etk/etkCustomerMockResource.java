@@ -3,6 +3,7 @@ package com.nuri.etk;
 import com.nuri.etk.entity.API.Customer;
 import com.nuri.etk.entity.API.MeterSerial;
 import com.nuri.etk.facade.flow.CustomerFlowFacade;
+import com.nuri.etk.spec.CustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -14,6 +15,11 @@ import org.springframework.web.bind.annotation.*;
 @Api(description = "고객 정보 Resource")
 @RequestMapping("/v2.0")
 public class etkCustomerMockResource implements CustomerFlowFacade {
+    private CustomerService customerService;
+
+    public etkCustomerMockResource(CustomerService customerService) {
+        this.customerService = customerService;
+    }
 
     @Override
     @ApiOperation(value = "고객 조회", notes = "고객 정보 요청 API")
@@ -23,7 +29,8 @@ public class etkCustomerMockResource implements CustomerFlowFacade {
     @GetMapping(value={"/customers/{customerNo}"})
     public Customer getCustomerByNo(@PathVariable String customerNo) {
         System.out.println("######## getCustomerByNo parameter {customerNo} : " + customerNo + " ########");
-        return Customer.getCustomerByNo(customerNo);
+//        return Customer.getCustomerByNo(customerNo);
+        return customerService.getCustomerByNo(customerNo);
     }
 
     @Override

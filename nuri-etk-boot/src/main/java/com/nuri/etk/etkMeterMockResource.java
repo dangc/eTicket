@@ -33,7 +33,6 @@ public class etkMeterMockResource implements MeterFlowFacade {
     @GetMapping(value={"/meters/{meterId}"})
     public List<Meter> getMeterInfo(@PathVariable String meterId){
         System.out.println("######## getMeterInfo parameter {meterId} : " + meterId + " ########");
-//        return Meter.getTargetByMeter(meterId);
         return meterService.getMeterInfo(meterId);
     }
 

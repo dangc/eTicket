@@ -13,11 +13,18 @@
     <typeAliases>
         <typeAlias alias="dcuJpo" type="com.nuri.etk.store.jpo.DcuJpo"/>
         <typeAlias alias="meterJpo" type="com.nuri.etk.store.jpo.MeterJpo"/>
+        <typeAlias alias="customerJpo" type="com.nuri.etk.store.jpo.CustomerJpo"/>
     </typeAliases>
 
     <mappers>
         <!--<mapper resource="mybatis/mariadb/DcuMapper.xml" />-->
         <mapper resource="mybatis/mariadb/MeterMapper.xml" />
+        <mapper resource="mybatis/mariadb/CustomerMapper.xml" />
+        <!--<mapper resource="mybatis/mariadb/ChargeMapper.xml" />
+        <mapper resource="mybatis/mariadb/ChargeHistoryMapper.xml" />
+        <mapper resource="mybatis/mariadb/DebtMapper.xml" />
+        <mapper resource="mybatis/mariadb/ReceiptMapper.xml" />
+        <mapper resource="mybatis/mariadb/UsageMapper.xml" />-->
     </mappers>
 
 </configuration>

@@ -22,7 +22,7 @@
             meter.MDS_ID AS meterId
             , cust.customerNo AS customerId
             , cust.name AS customerName
-            , cust.ZIPCODE AS geocode
+            , cont.contract_Number AS geocode
             , cust.address2 AS address
             , cont.lastTokenDate AS lastChargeDate
             , stat.descr AS supplyState
@@ -30,9 +30,9 @@
             , cont.currentArrears AS arrears
             , debt.amount AS debtTotal
         FROM
-            Customer cust
+            Contract cont
+            LEFT OUTER JOIN Customer cust on cont.CUSTOMER_ID = cust.id
             LEFT OUTER JOIN (select customer_id,sum(debt_amount) as amount from WS_CMS_DEBTENT where debt_status != 'CANCEL' group by customer_id) debt on cust.customerNo = debt.customer_id
-            , Contract cont
             LEFT OUTER JOIN Meter meter on cont.meter_id = meter.id
             LEFT OUTER JOIN Modem modem on meter.modem_id = modem.id
             LEFT OUTER JOIN Mcu mcu on modem.mcu_id = mcu.id
