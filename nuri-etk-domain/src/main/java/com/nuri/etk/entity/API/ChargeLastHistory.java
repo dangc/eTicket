@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,14 +16,14 @@ import java.util.Date;
 public class ChargeLastHistory {
 
     private Integer code;
-    private PaymentInfo paymentInfo;
+    private List<PaymentInfo> paymentInfo;
 
-    public ChargeLastHistory(Integer code, PaymentInfo paymentInfo) {
+    public ChargeLastHistory(Integer code, List<PaymentInfo> paymentInfo) {
         this.code = code;
         this.paymentInfo = paymentInfo;
     }
 
-    public static ChargeLastHistory chargeLast(String meterId) {
+    /*public static ChargeLastHistory chargeLast(String meterId) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
         PaymentInfo paymentInfo = new PaymentInfo(meterId, "20200825", "MobileMoney", 100.0, 80.0,
@@ -33,5 +34,5 @@ public class ChargeLastHistory {
         ChargeLastHistory charge = new ChargeLastHistory(200, paymentInfo);
 
         return charge;
-    }
+    }*/
 }

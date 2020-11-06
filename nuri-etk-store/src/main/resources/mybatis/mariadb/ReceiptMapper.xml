@@ -12,12 +12,64 @@
     <sql id="base_where_list">
         <where>
             <if test="meterId != null" >
-                AND meter.MDS_ID = #{meterId}
+                AND METER.MDS_ID = #{meterId}
+            </if>
+            <if test="chargeId != null" >
+                AND PREPAY.LASTTOKENID = #{chargeId}
             </if>
         </where>
     </sql>
 
-    <select id="" resultType="" parameterType="">
+    <select id="getReceiptInfo_customerInfo" resultType="customerInfoJpo" parameterType="java.lang.String">
+        SELECT
+            CUST.NAME AS customerName
+            , CONT.CONTRACT_NUMBER AS geocode
+            , CUST.CUSTOMERNO AS accountNo
+            , TARIFF.NAME AS tariffType
+            , LOC.NAME AS district
+            , CONT.ADDRESS1 AS address
+        FROM
+            CONTRACT CONT
+            LEFT OUTER JOIN METER METER ON CONT.METER_ID = METER.ID
+            LEFT OUTER JOIN PREPAYMENTLOG PREPAY ON PREPAY.CONTRACT_ID = CONT.ID
+            LEFT OUTER JOIN CUSTOMER CUST ON CONT.CUSTOMER_ID = CUST.ID
+            LEFT OUTER JOIN TARIFFTYPE TARIFF ON CONT.TARIFFINDEX_ID = TARIFF.ID
+            LEFT OUTER JOIN LOCATION LOC ON CONT.LOCATION_ID = LOC.ID
+        <include refid="base_where_list" />
+    </select>
 
+    <select id="getReceiptInfo_paymentInfo" resultType="paymentInfoJpo" parameterType="java.lang.String">
+        SELECT
+            METER.MDS_ID AS meterId
+            , PREPAY.LASTTOKENDATE AS "date"
+            , CASE WHEN PAYTYPE.NAME = 'Cash' THEN 'Vending Station'
+                    WHEN PAYTYPE.NAME = 'Cheque' THEN 'Vending Station'
+                    WHEN PAYTYPE.NAME = 'Card' THEN 'Vending Station'
+                    WHEN PAYTYPE.NAME = 'Mobile' THEN 'Mobile Money'
+                    ELSE 'Unknown'
+            END AS interfaceType
+            , PREPAY.CHARGEDARREARS + PREPAY.CHARGEDCREDIT + DEBT.CHARGEDDEBT AS paidAmount
+            , PREPAY.CHARGEDCREDIT AS chargedAmount
+            , PREPAY.PRE_BALANCE AS beforeBalance
+            , PREPAY.BALANCE AS currentBalance
+            , PREPAY.LASTTOKENID AS chargeId
+            , PREPAY.DAYS_FROM_CHARGE AS daysFromLastCharge
+            , PREPAY.ID AS receiptNo
+            , OP.NAME AS vendorName
+            , PAYTYPE.DESCR AS paymentType
+            , 'GHC' as creditUnit
+            , PREPAY.TOKEN AS token
+            , PREPAY.CANCEL_TOKEN AS cancelToken
+            , PREPAY.CANCEL_DATE AS cancelDate
+            , PREPAY.CHARGEDARREARS AS chargedArrears
+            , DEBT.CHARGEDDEBT AS chargedDebt
+        FROM
+            CONTRACT CONT
+            LEFT OUTER JOIN METER METER ON CONT.METER_ID = METER.ID
+            LEFT OUTER JOIN PREPAYMENTLOG PREPAY ON PREPAY.CONTRACT_ID = CONT.ID
+            LEFT OUTER JOIN DEBTLOG DEBT ON PREPAY.ID = DEBT.PREPAYMENTLOG_ID
+            LEFT OUTER JOIN OPERATOR OP ON PREPAY.OPERATOR_ID = OP.ID
+            LEFT OUTER JOIN CODE PAYTYPE ON PREPAY.PAY_TYPE_CODE = PAYTYPE.ID
+        <include refid="base_where_list" />
     </select>
 </mapper>

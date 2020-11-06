@@ -21,6 +21,6 @@ public class MeterLogic implements MeterService {
 
     @Override
     public List<Meter> getMeterInfo(String meterId){
-        return this.meterStore.getMeterInfo(meterId);
+        return meterStore.getMeterInfo(meterId);
     }
 }

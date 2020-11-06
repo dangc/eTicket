@@ -3,6 +3,8 @@ package com.nuri.etk;
 import com.nuri.etk.entity.API.ChargeHistory;
 import com.nuri.etk.entity.API.ChargeLastHistory;
 import com.nuri.etk.facade.flow.ChargeHistoryFlowFacade;
+import com.nuri.etk.spec.ChargeHistoryService;
+import com.nuri.etk.spec.ReceiptService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -16,6 +18,11 @@ import java.text.SimpleDateFormat;
 @Api(description = "충전 이력 정보 Resource")
 @RequestMapping("/v2.0")
 public class etkChargeHistoryMockResource implements ChargeHistoryFlowFacade {
+    private ChargeHistoryService chargeHistoryService;
+
+    public etkChargeHistoryMockResource(ChargeHistoryService chargeHistoryService) {
+        this.chargeHistoryService = chargeHistoryService;
+    }
 
     @Override
     @ApiOperation(value = "마지막 충전 이력", notes = "마지막 충전 이력 정보 요청 API")
@@ -25,7 +32,7 @@ public class etkChargeHistoryMockResource implements ChargeHistoryFlowFacade {
     @GetMapping(value={"/meters/{meterId}/charge/last"})
     public ChargeLastHistory chargeLast(@PathVariable String meterId) {
         System.out.println("######## chargeLast parameter {meterId} : " + meterId + " ########");
-        return ChargeLastHistory.chargeLast(meterId);
+        return chargeHistoryService.chargeLast(meterId);
     }
 
     @Override

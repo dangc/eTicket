@@ -1,5 +1,7 @@
 package com.nuri.etk.spec;
 
-public interface ChargeHistoryService {
+import com.nuri.etk.entity.API.ChargeLastHistory;
 
+public interface ChargeHistoryService {
+    ChargeLastHistory chargeLast(String meterId);
 }

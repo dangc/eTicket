@@ -22,17 +22,19 @@ public class MeterJpo {
     private Double arrears;
     private Double debtTotal;
 
-    public MeterJpo(String meterId, String customerId, String customerName, String geocode, String address, String lastChargeDate, String supplyState, Double credit, Double arrears, Double debtTotal) {
-        this.meterId = meterId;
-        this.customerId = customerId;
-        this.customerName = customerName;
-        this.geocode = geocode;
-        this.address = address;
-        this.lastChargeDate = lastChargeDate;
-        this.supplyState = supplyState;
-        this.credit = credit;
-        this.arrears = arrears;
-        this.debtTotal = debtTotal;
+    public MeterJpo(Meter meter) {
+        if(meter != null) {
+            this.meterId = meter.getMeterId();
+            this.customerId = meter.getCustomerId();
+            this.customerName = meter.getCustomerName();
+            this.geocode = meter.getGeocode();
+            this.address = meter.getAddress();
+            this.lastChargeDate = meter.getLastChargeDate();
+            this.supplyState = meter.getSupplyState();
+            this.credit = meter.getCredit();
+            this.arrears = meter.getArrears();
+            this.debtTotal = meter.getDebtTotal();
+        }
     }
 
     public Meter toDomain() {

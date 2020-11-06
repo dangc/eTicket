@@ -2,6 +2,7 @@ package com.nuri.etk;
 
 import com.nuri.etk.entity.API.Receipt;
 import com.nuri.etk.facade.flow.ReceiptFlowFacade;
+import com.nuri.etk.spec.ReceiptService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -13,6 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @Api(description = "영수증 정보 Resource")
 @RequestMapping("/v2.0")
 public class etkReceiptMockResource implements ReceiptFlowFacade {
+    private ReceiptService receiptService;
+
+    public etkReceiptMockResource(ReceiptService receiptService) {
+        this.receiptService = receiptService;
+    }
 
     @Override
     @ApiOperation(value = "영수증 정보 조회", notes = "영수증 정보 요청 API")
@@ -22,7 +28,7 @@ public class etkReceiptMockResource implements ReceiptFlowFacade {
     })
     @GetMapping(value={"/meters/{meterId}/receipt"})
     public Receipt getReceiptInfo(@PathVariable String meterId, @RequestParam(value="chargeId", required=false) String chargeId) {
-        System.out.println("######## chargeHistory parameter {meterId : " + meterId + "} {chargeId : " + chargeId + "} ########");
-        return Receipt.getReceipt(meterId, chargeId);
+        System.out.println("######## getReceiptInfo parameter {meterId : " + meterId + "} {chargeId : " + chargeId + "} ########");
+        return receiptService.getReceiptInfo(meterId, chargeId);
     }
 }
