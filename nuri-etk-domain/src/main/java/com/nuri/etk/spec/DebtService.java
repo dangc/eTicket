@@ -1,5 +1,7 @@
 package com.nuri.etk.spec;
 
-public interface DebtService {
+import com.nuri.etk.entity.API.Debt;
 
+public interface DebtService {
+    Debt getDebtInfo(String customerNo);
 }

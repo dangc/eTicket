@@ -22,14 +22,6 @@ public class ReceiptJpo {
     private List<CustomerInfo> customerInfo;
     private List<PaymentInfo> paymentInfo;
 
-//    public ReceiptJpo(Receipt receipt) {
-//        if(receipt != null) {
-//            this.code = receipt.getCode();
-//            this.customerInfo = receipt.getCustomerInfo();
-//            this.paymentInfo = receipt.getPaymentInfo();
-//        }
-//    }
-
     public ReceiptJpo(Integer code, List<CustomerInfo> customerInfo, List<PaymentInfo> paymentInfo) {
         this.code = code;
         this.customerInfo = customerInfo;

@@ -17,6 +17,7 @@
         <typeAlias alias="receiptJpo" type="com.nuri.etk.store.jpo.ReceiptJpo"/>
         <typeAlias alias="paymentInfoJpo" type="com.nuri.etk.store.jpo.PaymentInfoJpo"/>
         <typeAlias alias="customerInfoJpo" type="com.nuri.etk.store.jpo.CustomerInfoJpo"/>
+        <typeAlias alias="debtInfoJpo" type="com.nuri.etk.store.jpo.DebtInfoJpo"/>
     </typeAliases>
 
     <mappers>
@@ -25,8 +26,8 @@
         <mapper resource="mybatis/mariadb/CustomerMapper.xml" />
         <mapper resource="mybatis/mariadb/ReceiptMapper.xml" />
         <mapper resource="mybatis/mariadb/ChargeHistoryMapper.xml" />
-        <!--<mapper resource="mybatis/mariadb/ChargeMapper.xml" />
         <mapper resource="mybatis/mariadb/DebtMapper.xml" />
+        <!--<mapper resource="mybatis/mariadb/ChargeMapper.xml" />
         <mapper resource="mybatis/mariadb/UsageMapper.xml" />-->
     </mappers>
 

@@ -11,13 +11,27 @@
 
     <sql id="base_where_list">
         <where>
-            <if test="meterId != null" >
-                AND meter.MDS_ID = #{meterId}
+            <if test="customerNo != null" >
+                AND CUST.CUSTOMERNO = #{customerNo}
             </if>
         </where>
     </sql>
 
-    <select id="" resultType="" parameterType="">
-
+    <select id="getDebtInfo" resultType="debtInfoJpo" parameterType="java.lang.String">
+        SELECT
+            DEBT.DEBT_REF as debtRef
+            , CUST.CUSTOMERNO as customerId
+            , DEBT.INSTALLMENT_DUE_DATE as installmentDueDate
+            , DEBT.DEBT_STATUS as debtStatus
+            , DEBT.DEBT_TYPE as debtType
+            , DEBT.DEBT_AMOUNT as debtAmount
+        FROM
+            CONTRACT CONT
+            LEFT OUTER JOIN CUSTOMER CUST ON CONT.CUSTOMER_ID = CUST.ID
+            LEFT OUTER JOIN WS_CMS_DEBTENT DEBT ON DEBT.CUSTOMER_ID = CUST.CUSTOMERNO
+            LEFT OUTER JOIN METER METER ON CONT.METER_ID = METER.ID
+            LEFT OUTER JOIN DEVICEMODEL DEVICE ON METER.DEVICEMODEL_ID = DEVICE.ID
+            LEFT OUTER JOIN MODEM MODEM ON METER.MODEM_ID = MODEM.ID
+        <include refid="base_where_list" />
     </select>
 </mapper>

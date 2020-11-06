@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,9 +17,9 @@ public class Debt {
 //    private String meterId;
     private Integer code;
     private Double arrears;
-    private ArrayList<DebtInfo> dept;
+    private List<DebtInfo> dept;
 
-    public Debt(Integer code, Double arrears, ArrayList<DebtInfo> dept) {
+    public Debt(Integer code, Double arrears, List<DebtInfo> dept) {
         this.code = code;
         this.arrears = arrears;
         this.dept = dept;

@@ -1,5 +1,6 @@
 package com.nuri.etk.logic;
 
+import com.nuri.etk.entity.API.Debt;
 import com.nuri.etk.spec.DebtService;
 import com.nuri.etk.store.DebtStore;
 import org.springframework.stereotype.Service;
@@ -15,4 +16,12 @@ public class DebtLogic implements DebtService {
         this.debtStore = debtStore;
     }
 
+    @Override
+    public Debt getDebtInfo(String customerNo) {
+        Debt debt = new Debt();
+        debt.setDept(debtStore.getDebtInfo(customerNo));
+        // To do : code값 validation 추가
+        debt.setCode(200);
+        return debt;
+    }
 }
