@@ -1,6 +1,7 @@
-package com.nuri.etk.entity.API;
+package com.nuri.etk.store.jpo;
 
 
+import com.nuri.etk.entity.API.UsageBalance;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,7 +12,7 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UsageBalance {
+public class UsageBalanceJpo {
 
     private Integer code;
     private String meterId;
@@ -21,7 +22,7 @@ public class UsageBalance {
     private Double balance;
     private String creditUnit;
 
-    public UsageBalance(UsageBalance usageBalance) {
+    public UsageBalanceJpo(UsageBalance usageBalance) {
         if(usageBalance != null){
             this.code = usageBalance.getCode();
             this.meterId = usageBalance.getMeterId();
@@ -31,5 +32,17 @@ public class UsageBalance {
             this.creditUnit = usageBalance.getCreditUnit();
             this.balance = usageBalance.getBalance();
         }
+    }
+
+    public UsageBalance toDomain() {
+        UsageBalance usageBalance = new UsageBalance();
+        usageBalance.setCode(this.code);
+        usageBalance.setMeterId(this.meterId);
+        usageBalance.setDate(this.date);
+        usageBalance.setUsage(this.usage);
+        usageBalance.setUsageUnit(this.usageUnit);
+        usageBalance.setBalance(this.balance);
+        usageBalance.setCreditUnit(this.creditUnit);
+        return usageBalance;
     }
 }

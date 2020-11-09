@@ -18,17 +18,21 @@
         <typeAlias alias="paymentInfoJpo" type="com.nuri.etk.store.jpo.PaymentInfoJpo"/>
         <typeAlias alias="customerInfoJpo" type="com.nuri.etk.store.jpo.CustomerInfoJpo"/>
         <typeAlias alias="debtInfoJpo" type="com.nuri.etk.store.jpo.DebtInfoJpo"/>
+        <typeAlias alias="usageJpo" type="com.nuri.etk.store.jpo.UsageJpo"/>
+        <typeAlias alias="usageBalanceJpo" type="com.nuri.etk.store.jpo.UsageBalanceJpo"/>
+        <typeAlias alias="dailyUsagesJpo" type="com.nuri.etk.store.jpo.DailyUsagesJpo"/>
+        <typeAlias alias="monthlyUsagesJpo" type="com.nuri.etk.store.jpo.MonthlyUsagesJpo"/>
     </typeAliases>
 
     <mappers>
-        <!--<mapper resource="mybatis/mariadb/DcuMapper.xml" />-->
-        <mapper resource="mybatis/mariadb/MeterMapper.xml" />
-        <mapper resource="mybatis/mariadb/CustomerMapper.xml" />
-        <mapper resource="mybatis/mariadb/ReceiptMapper.xml" />
-        <mapper resource="mybatis/mariadb/ChargeHistoryMapper.xml" />
-        <mapper resource="mybatis/mariadb/DebtMapper.xml" />
-        <!--<mapper resource="mybatis/mariadb/ChargeMapper.xml" />
-        <mapper resource="mybatis/mariadb/UsageMapper.xml" />-->
+        <!--<mapper resource="mybatis/oracle/DcuMapper.xml" />-->
+        <mapper resource="mybatis/oracle/MeterMapper.xml" />
+        <mapper resource="mybatis/oracle/CustomerMapper.xml" />
+        <mapper resource="mybatis/oracle/ReceiptMapper.xml" />
+        <mapper resource="mybatis/oracle/ChargeHistoryMapper.xml" />
+        <mapper resource="mybatis/oracle/DebtMapper.xml" />
+        <mapper resource="mybatis/oracle/UsageMapper.xml" />
+        <!--<mapper resource="mybatis/oracle/ChargeMapper.xml" />-->
     </mappers>
 
 </configuration>

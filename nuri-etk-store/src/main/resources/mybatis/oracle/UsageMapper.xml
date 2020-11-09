@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--***********************************
+* @Copyright : nuritelecom
+* @ProjectName : nuri-aimir-etk
+* @FileName : MeterMapper.xml
+* @Author : jhdang
+* @Date : 2020-10
+************************************-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nuri.etk.store.mapper.UsageMapper">
+
+    <sql id="base_where_list">
+        <where>
+            <if test="meterId != null" >
+                AND BILL.MDEV_ID = #{meterId}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="UsageYearly_where_list">
+        <where>
+            <if test="meterId != null" >
+                AND MONTHLY.MDS_ID = #{meterId}
+            </if>
+            <if test="startDate != null and endDate != null" >
+                AND MONTHLY.YYYYMM BETWEEN #{startDate} AND #{endDate}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getBalance" resultType="usageBalanceJpo" parameterType="java.lang.String">
+        SELECT
+            METER.MDS_ID AS meterId
+            , MAX(BILL.YYYYMMDD) as "date"
+            , BILL.ACCUMULATEUSAGE as usage
+            , 'kWh' as usageUnit
+            , BILL.ACCUMULATEBILL as balance
+            , 'GHC' as creditUnit
+        FROM
+            CONTRACT CONT
+            LEFT OUTER JOIN CUSTOMER CUST ON CONT.CUSTOMER_ID = CUST.ID
+            LEFT OUTER JOIN METER METER ON CONT.METER_ID = METER.ID
+            LEFT OUTER JOIN BILLING_BLOCK_TARIFF BILL ON BILL.METER_ID = METER.ID
+        <include refid="base_where_list" />
+        GROUP BY
+            METER.MDS_ID
+            , BILL.ACCUMULATEUSAGE
+            , BILL.ACCUMULATEBILL
+    </select>
+
+    <select id="getUsage" resultType="usageJpo" parameterType="java.lang.String">
+        SELECT
+            METER.MDS_ID AS meterId
+            , TO_CHAR(TRUNC(sysdate,'MM'), 'yyyymmdd') as startDate
+            , TO_CHAR(SYSDATE, 'yyyymmdd') as endDate
+            , MAX(BILL.ACCUMULATEUSAGE) as usage
+            , 'kWh' as usageUnit
+            , MAX(BILL.ACCUMULATEBILL) as credit
+            , 'GHC' as creditUnit
+        FROM
+            CONTRACT CONT
+            LEFT OUTER JOIN CUSTOMER CUST ON CONT.CUSTOMER_ID = CUST.ID
+            LEFT OUTER JOIN METER METER ON CONT.METER_ID = METER.ID
+            LEFT OUTER JOIN BILLING_BLOCK_TARIFF BILL ON BILL.METER_ID = METER.ID
+        WHERE 1=1
+            <if test="meterId != null" >
+                AND BILL.MDEV_ID = #{meterId}
+            </if>
+            AND BILL.YYYYMMDD BETWEEN TO_CHAR(TRUNC(SYSDATE,'MM'), 'yyyymmdd') AND TO_CHAR(SYSDATE, 'yyyymmdd')
+        GROUP BY
+            METER.MDS_ID
+            , TO_CHAR(TRUNC(SYSDATE,'MM')
+            , 'yyyymmdd'), TO_CHAR(SYSDATE, 'yyyymmdd')
+    </select>
+
+    <select id="getUsageMonthly" resultType="dailyUsagesJpo" parameterType="java.lang.String">
+        SELECT
+            meter.MDS_ID AS meterId
+            , bill.YYYYMMDD as "date"
+            , bill.ACCUMULATEUSAGE as usage
+            , 'kWh' as usageUnit
+            , bill.ACCUMULATEBILL as credit
+            , 'GHC' as creditUnit
+        FROM
+            CONTRACT CONT
+            LEFT OUTER JOIN CUSTOMER CUST ON CONT.CUSTOMER_ID = CUST.ID
+            LEFT OUTER JOIN METER METER ON CONT.METER_ID = METER.ID
+            LEFT OUTER JOIN BILLING_BLOCK_TARIFF BILL ON BILL.METER_ID = METER.ID
+        <include refid="base_where_list" />
+    </select>
+
+    <select id="getUsageYearly" resultType="monthlyUsagesJpo" parameterType="java.lang.String">
+        SELECT
+            meter.MDS_ID AS meterId
+            , monthly.YYYYMM as responseDateTime
+            , monthly.USED_CONSUMPTION as usage
+            , 'kWh' as usageUnit
+            , monthly.MONTHLY_COST as credit
+            , 'GHC' as creditUnit
+        FROM
+            CONTRACT CONT
+            LEFT OUTER JOIN METER METER ON CONT.METER_ID = METER.ID
+            LEFT OUTER JOIN MONTHLY_BILLING_LOG MONTHLY ON MONTHLY.CONTRACT_ID = CONT.ID
+        <include refid="UsageYearly_where_list" />
+    </select>
+</mapper>

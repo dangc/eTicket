@@ -6,6 +6,7 @@ import com.nuri.etk.entity.API.UsageBalance;
 import com.nuri.etk.entity.API.UsageMonthly;
 import com.nuri.etk.entity.API.UsageYearly;
 import com.nuri.etk.facade.flow.UsageFlowFacade;
+import com.nuri.etk.spec.UsageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -17,7 +18,12 @@ import org.springframework.web.bind.annotation.*;
 @Api(description = "사용량 정보 Resource")
 @RequestMapping("/v2.0")
 public class etkUsageMockResource implements UsageFlowFacade {
+    private UsageService usageService;
     Logger log = null;
+
+    public etkUsageMockResource(UsageService usageService) {
+        this.usageService = usageService;
+    }
 
     @Override
     @ApiOperation(value = "현재 잔액 및 사용량 조회", notes = "현재 잔액 및 사용량 정보 요청 API")
@@ -27,7 +33,7 @@ public class etkUsageMockResource implements UsageFlowFacade {
     @GetMapping(value={"/meters/{meterId}/balance"})
     public UsageBalance getBalance(@PathVariable String meterId) {
         System.out.println("######## getBalance parameter {meterId} : " + meterId + " ########");
-        return UsageBalance.getBalance(meterId);
+        return usageService.getBalance(meterId);
     }
 
     @Override
@@ -39,7 +45,7 @@ public class etkUsageMockResource implements UsageFlowFacade {
     public Usage getUsage(@PathVariable String meterId) {
 //        log.info("meterId : {}", meterId);
         System.out.println("######## getUsage parameter {meterId} : " + meterId + " ########");
-        return Usage.getUsage(meterId);
+        return usageService.getUsage(meterId);
     }
 
     @Override
@@ -50,7 +56,7 @@ public class etkUsageMockResource implements UsageFlowFacade {
     @GetMapping(value={"/meters/{meterId}/usage/monthly"})
     public UsageMonthly getUsageMonthly(@PathVariable String meterId) {
         System.out.println("######## getUsageMonthly parameter {meterId} : " + meterId + " ########");
-        return UsageMonthly.getUsageMonthly(meterId);
+        return usageService.getUsageMonthly(meterId);
     }
 
     @Override
@@ -67,6 +73,6 @@ public class etkUsageMockResource implements UsageFlowFacade {
                                       @RequestParam(value="endDate", required=false) String endDate) {
 
         System.out.println("######## getUsageYearly parameter {meterId : " + meterId + "} {startDate : " + startDate + "} {endDate : " + endDate + "} ########");
-        return UsageYearly.getUsageYearly(meterId, startDate, endDate);
+        return usageService.getUsageYearly(meterId, startDate, endDate);
     }
 }

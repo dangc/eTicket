@@ -33,5 +33,19 @@
             LEFT OUTER JOIN DEVICEMODEL DEVICE ON METER.DEVICEMODEL_ID = DEVICE.ID
             LEFT OUTER JOIN MODEM MODEM ON METER.MODEM_ID = MODEM.ID
         <include refid="base_where_list" />
+        ORDER BY LASTTOKENDATE DESC
+    </select>
+
+    <select id="getDebtArrears" resultType="java.lang.String" parameterType="java.lang.String">
+        SELECT * FROM
+            (SELECT
+                CONT.CURRENTARREARS as arrears
+            FROM
+                CONTRACT CONT
+                LEFT OUTER JOIN CUSTOMER CUST ON CONT.CUSTOMER_ID = CUST.ID
+            WHERE
+        <include refid="base_where_list" />
+            ORDER BY LASTTOKENDATE DESC)
+        WHERE ROWNUM = 1
     </select>
 </mapper>

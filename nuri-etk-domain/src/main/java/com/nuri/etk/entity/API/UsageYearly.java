@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @Getter
@@ -18,9 +19,9 @@ public class UsageYearly {
 
     private Integer code;
     private String meterId;
-    private ArrayList<MonthlyUsages> monthlyUsages;
+    private List<MonthlyUsages> monthlyUsages;
 
-    public UsageYearly(Integer code, String meterId, ArrayList<MonthlyUsages> monthlyUsages) {
+    public UsageYearly(Integer code, String meterId, List<MonthlyUsages> monthlyUsages) {
         this.code = code;
         this.meterId = meterId;
         this.monthlyUsages = monthlyUsages;

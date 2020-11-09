@@ -9,6 +9,7 @@ import lombok.Setter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 @Getter
@@ -18,9 +19,9 @@ public class UsageMonthly {
 
     private Integer code;
     private String meterId;
-    private ArrayList<DailyUsages> dailyUsages;
+    private List<DailyUsages> dailyUsages;
 
-    public UsageMonthly(Integer code, String meterId, ArrayList<DailyUsages> dailyUsages) {
+    public UsageMonthly(Integer code, String meterId, List<DailyUsages> dailyUsages) {
         this.code = code;
         this.meterId = meterId;
         this.dailyUsages = dailyUsages;
