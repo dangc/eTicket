@@ -25,27 +25,50 @@ public class TargetByMeter {
     private Double arrears;
     private Double debtTotal;
 
-    public TargetByMeter(Integer code, String geocode, String address, String lastChargeDate, String customerId, String customerName, String mobileNumber, String supplyState, Double credit, Double arrears, Double debtTotal) {
+    public TargetByMeter(Integer code, String geocode, Double credit, String address, String lastChargeDate, String customerId, String customerName, String mobileNumber, String supplyState, Double arrears, Double debtTotal) {
         this.code = code;
         this.geocode = geocode;
+        this.credit = credit;
         this.address = address;
         this.lastChargeDate = lastChargeDate;
         this.customerId = customerId;
         this.customerName = customerName;
         this.mobileNumber = mobileNumber;
         this.supplyState = supplyState;
-        this.credit = credit;
         this.arrears = arrears;
         this.debtTotal = debtTotal;
     }
 
-    public static TargetByMeter getTargetByMeter(String meterId) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    public TargetByMeter(TargetByMeter targetByMeter) {
+        if(targetByMeter != null){
+            this.code = targetByMeter.getCode();
+            this.geocode = targetByMeter.getGeocode();
+            this.credit = targetByMeter.getCredit();
+            this.address = targetByMeter.getAddress();
+            this.lastChargeDate = targetByMeter.getLastChargeDate();
+            this.customerId = targetByMeter.getCustomerId();
+            this.customerName = targetByMeter.getCustomerName();
+            this.mobileNumber = targetByMeter.getMobileNumber();
+            this.supplyState = targetByMeter.getSupplyState();
+            this.arrears = targetByMeter.getArrears();
+            this.debtTotal = targetByMeter.getDebtTotal();
+        }
+    }
 
-        TargetByMeter meter = new TargetByMeter(200,"03042100300702000", "7200-PRAMPRAM, St1 - Prampram - PRAMPRAM",
-                dateFormat.format(new Date()),"4014", "ECGCustomer", "+233 24-323-4545", "Normal", 725.77,0.0, 20.0);
-
-        return meter;
-
+    @Override
+    public String toString() {
+        return "TargetByMeter{" +
+                "code=" + code +
+                ", geocode='" + geocode + '\'' +
+                ", address='" + address + '\'' +
+                ", lastChargeDate='" + lastChargeDate + '\'' +
+                ", customerId='" + customerId + '\'' +
+                ", customerName='" + customerName + '\'' +
+                ", mobileNumber='" + mobileNumber + '\'' +
+                ", supplyState='" + supplyState + '\'' +
+                ", credit=" + credit +
+                ", arrears=" + arrears +
+                ", debtTotal=" + debtTotal +
+                '}';
     }
 }

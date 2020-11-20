@@ -17,6 +17,17 @@
         </where>
     </sql>
 
+   <!-- <sql id="pagingHeaderSql">
+        SELECT   T.*
+        FROM   (SELECT   ROWNUM AS RNUM, A.*
+        FROM   (
+    </sql>
+
+    <sql id="pagingFooterSql">
+        ) A) T
+        WHERE   T.RNUM BETWEEN ( NVL(#{ROWCOUNT}, 10) * NVL(#{CURRENTPAGE}, 1) ) - ( NVL(#{ROWCOUNT},10)-1 ) AND (NVL(#{ROWCOUNT}, 10) * NVL (#{CURRENTPAGE}, 1))
+    </sql>-->
+
     <select id="chargeLast" resultType="paymentInfoJpo" parameterType="java.lang.String">
         SELECT
             METER.MDS_ID AS meterId

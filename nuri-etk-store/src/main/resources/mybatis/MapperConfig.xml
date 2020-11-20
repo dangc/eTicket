@@ -13,7 +13,10 @@
     <typeAliases>
         <typeAlias alias="dcuJpo" type="com.nuri.etk.store.jpo.DcuJpo"/>
         <typeAlias alias="meterJpo" type="com.nuri.etk.store.jpo.MeterJpo"/>
+        <typeAlias alias="targetByMeterJpo" type="com.nuri.etk.store.jpo.TargetByMeterJpo"/>
+        <typeAlias alias="registerInfoByMeterJpo" type="com.nuri.etk.store.jpo.RegisterInfoByMeterJpo"/>
         <typeAlias alias="customerJpo" type="com.nuri.etk.store.jpo.CustomerJpo"/>
+        <typeAlias alias="meterSerialJpo" type="com.nuri.etk.store.jpo.MeterSerialJpo"/>
         <typeAlias alias="receiptJpo" type="com.nuri.etk.store.jpo.ReceiptJpo"/>
         <typeAlias alias="paymentInfoJpo" type="com.nuri.etk.store.jpo.PaymentInfoJpo"/>
         <typeAlias alias="customerInfoJpo" type="com.nuri.etk.store.jpo.CustomerInfoJpo"/>
@@ -22,17 +25,22 @@
         <typeAlias alias="usageBalanceJpo" type="com.nuri.etk.store.jpo.UsageBalanceJpo"/>
         <typeAlias alias="dailyUsagesJpo" type="com.nuri.etk.store.jpo.DailyUsagesJpo"/>
         <typeAlias alias="monthlyUsagesJpo" type="com.nuri.etk.store.jpo.MonthlyUsagesJpo"/>
+        <typeAlias alias="aimirContractJpo" type="com.nuri.etk.store.jpo.aimir.ContractJpo"/>
+        <typeAlias alias="aimirMeterJpo" type="com.nuri.etk.store.jpo.aimir.MeterJpo"/>
+        <typeAlias alias="aimirDeviceModelJpo" type="com.nuri.etk.store.jpo.aimir.DeviceModelJpo"/>
+        <typeAlias alias="aimirDeviceVendorJpo" type="com.nuri.etk.store.jpo.aimir.DeviceVendorJpo"/>
+        <typeAlias alias="aimirMeterJpo" type="com.nuri.etk.store.jpo.aimir.MeterJpo"/>
     </typeAliases>
 
     <mappers>
-        <!--<mapper resource="mybatis/oracle/DcuMapper.xml" />-->
         <mapper resource="mybatis/oracle/MeterMapper.xml" />
         <mapper resource="mybatis/oracle/CustomerMapper.xml" />
         <mapper resource="mybatis/oracle/ReceiptMapper.xml" />
         <mapper resource="mybatis/oracle/ChargeHistoryMapper.xml" />
         <mapper resource="mybatis/oracle/DebtMapper.xml" />
         <mapper resource="mybatis/oracle/UsageMapper.xml" />
-        <!--<mapper resource="mybatis/oracle/ChargeMapper.xml" />-->
+        <mapper resource="mybatis/oracle/ChargeMapper.xml" />
+        <!--<mapper resource="mybatis/oracle/CodeMapper.xml" />-->
     </mappers>
 
 </configuration>

@@ -1,10 +1,11 @@
 package com.nuri.etk.store;
 
-import com.nuri.etk.entity.API.Dcu;
 import com.nuri.etk.entity.API.Meter;
-import com.nuri.etk.store.jpo.DcuJpo;
+import com.nuri.etk.entity.API.RegisterInfoByMeter;
+import com.nuri.etk.entity.API.TargetByMeter;
 import com.nuri.etk.store.jpo.MeterJpo;
-import com.nuri.etk.store.mapper.DcuMapper;
+import com.nuri.etk.store.jpo.RegisterInfoByMeterJpo;
+import com.nuri.etk.store.jpo.TargetByMeterJpo;
 import com.nuri.etk.store.mapper.MeterMapper;
 import org.springframework.stereotype.Component;
 
@@ -29,5 +30,27 @@ public class MeterMapperStore implements MeterStore {
             e.printStackTrace();
         }
         return meterJpo.stream().map(MeterJpo::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public TargetByMeter getTargetByMeter(String meterId) {
+        TargetByMeterJpo targetByMeterJpo = null;
+        try {
+            targetByMeterJpo = meterMapper.getTargetByMeter(meterId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return targetByMeterJpo.toDomain();
+    }
+
+    @Override
+    public RegisterInfoByMeter getRegisterInfoByMeter(String meterId) {
+        RegisterInfoByMeterJpo registerInfoByMeterJpo = null;
+        try {
+            registerInfoByMeterJpo = meterMapper.getRegisterInfoByMeter(meterId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return registerInfoByMeterJpo.toDomain();
     }
 }

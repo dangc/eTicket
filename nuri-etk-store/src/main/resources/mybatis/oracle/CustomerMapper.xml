@@ -12,23 +12,33 @@
     <sql id="base_where_list">
         <where>
             <if test="customerNo != null" >
-                AND cust.CUSTOMERNO = #{customerNo}
+                AND CUST.CUSTOMERNO = #{customerNo}
             </if>
         </where>
     </sql>
 
     <select id="getCustomerByNo" resultType="customerJpo" parameterType="java.lang.String">
         SELECT
-            cust.customerNo AS customerId
-            , device.name AS meterModel
-            , MODEM.DEVICE_SERIAL AS modemId
-            , cont.contract_Number AS geocode
+            CUST.CUSTOMERNO AS CUSTOMERID
+            , DEVICE.NAME AS METERMODEL
+            , MODEM.DEVICE_SERIAL AS MODEMID
+            , CONT.CONTRACT_NUMBER AS GEOCODE
         FROM
-            Contract cont
-            LEFT OUTER JOIN Customer cust on cont.CUSTOMER_ID = cust.id
-            LEFT OUTER JOIN Meter meter on cont.meter_id = meter.id
-            LEFT OUTER JOIN DEVICEMODEL device on meter.DEVICEMODEL_ID = device.id
-            LEFT OUTER JOIN Modem modem on meter.modem_id = modem.id
+            CONTRACT CONT
+            LEFT OUTER JOIN CUSTOMER CUST ON CONT.CUSTOMER_ID = CUST.ID
+            LEFT OUTER JOIN METER METER ON CONT.METER_ID = METER.ID
+            LEFT OUTER JOIN DEVICEMODEL DEVICE ON METER.DEVICEMODEL_ID = DEVICE.ID
+            LEFT OUTER JOIN MODEM MODEM ON METER.MODEM_ID = MODEM.ID
+        <include refid="base_where_list" />
+    </select>
+
+    <select id="getCustomerByMeter" resultType="meterSerialJpo" parameterType="java.lang.String">
+        SELECT
+            METER.MDS_ID as METERID
+        FROM
+            CONTRACT CONT
+            LEFT OUTER JOIN CUSTOMER CUST ON CONT.CUSTOMER_ID = CUST.ID
+            LEFT OUTER JOIN METER METER ON CONT.METER_ID = METER.ID
         <include refid="base_where_list" />
     </select>
 </mapper>

@@ -24,18 +24,13 @@ public class Customer {
         this.modemId = modemId;
         this.geocode = geocode;
     }
-
-    public static Customer getCustomerByNo(String customerNo) {
-        Customer customer = new Customer(200, customerNo, "NRAM-3405CT10", "000B1200000D1506", "03042100301754850");
-//        customer.setMeterId(meterId);
-
-        return customer;
-    }
-
-    public static Customer getCustomerByMeter(String customerNo) {
-        Customer customer = new Customer(200, customerNo, "NRAM-3405CT10", "000B12000010D86F", "03042100320101500");
-//        customer.setMeterId("23234234");
-
-        return customer;
+    public Customer(Customer customer) {
+        if(customer != null){
+            this.code = customer.getCode();
+            this.customerId = customer.getCustomerId();
+            this.meterModel = customer.getMeterModel();
+            this.modemId = customer.getModemId();
+            this.geocode = customer.getGeocode();
+        }
     }
 }

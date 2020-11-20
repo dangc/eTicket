@@ -22,19 +22,12 @@ public class RegisterInfoByMeter {
         this.mobileNumber = mobileNumber;
     }
 
-    public static RegisterInfoByMeter getRegisterInfoByMeter(String meterId) {
-        RegisterInfoByMeter meter = new RegisterInfoByMeter(200, meterId, "ECGCustomer", "+233 24-323-4545");
-        System.out.println("######## getRegisterInfoByMeter return : " + meter.toString() + " ########");
-        return meter;
-    }
-
-    @Override
-    public String toString() {
-        return "RegisterInfoByMeter{" +
-                "code=" + code +
-                ", meterId='" + meterId + '\'' +
-                ", customerName='" + customerName + '\'' +
-                ", mobileNumber='" + mobileNumber + '\'' +
-                '}';
+    public RegisterInfoByMeter(RegisterInfoByMeter registerInfoByMeter) {
+        if(registerInfoByMeter != null){
+            this.code = registerInfoByMeter.getCode();
+            this.meterId = registerInfoByMeter.getMeterId();
+            this.customerName = registerInfoByMeter.getCustomerName();
+            this.mobileNumber = registerInfoByMeter.getMobileNumber();
+        }
     }
 }

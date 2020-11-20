@@ -16,7 +16,10 @@ public class MeterSerial {
         this.meterId = meterId;
     }
 
-    public static MeterSerial getMeterByGC(String customerNo){
-        return new MeterSerial(200, "P191035096");
+    public MeterSerial(MeterSerial meterSerial) {
+        if(meterSerial != null){
+            this.code = meterSerial.getCode();
+            this.meterId = meterSerial.getMeterId();
+        }
     }
 }

@@ -56,7 +56,7 @@ public class etkMeterMockResource implements MeterFlowFacade {
     @GetMapping(value={"/meters/{meterId}/target"})
     public TargetByMeter getTargetByMeter(@PathVariable String meterId){
         System.out.println("######## getTargetByMeter parameter {meterId} : " + meterId + " ########");
-        return TargetByMeter.getTargetByMeter(meterId);
+        return meterService.getTargetByMeter(meterId);
     }
 
     @Override
@@ -67,6 +67,6 @@ public class etkMeterMockResource implements MeterFlowFacade {
     @GetMapping(value={"/meters/{meterId}/register"})
     public RegisterInfoByMeter getRegisterInfoByMeter(@PathVariable String meterId){
         System.out.println("######## getRegisterInfoByMeter parameter {meterId} : " + meterId + " ########");
-        return RegisterInfoByMeter.getRegisterInfoByMeter(meterId);
+        return meterService.getRegisterInfoByMeter(meterId);
     }
 }

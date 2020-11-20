@@ -12,12 +12,85 @@
     <sql id="base_where_list">
         <where>
             <if test="meterId != null" >
-                AND meter.MDS_ID = #{meterId}
+                AND METER.MDS_ID = #{meterId}
             </if>
         </where>
     </sql>
 
-    <select id="" resultType="" parameterType="">
+    <select id="getContract" resultType="aimirContractJpo" parameterType="java.lang.String">
+        SELECT
+            CONT.ID AS id
+            , CONT.CONTRACT_NUMBER AS contractNumber
+            , CUST.CUSTOMERNO AS customerId
+            , CONT.LASTTOKENDATE AS lastTokenDate
+            , CONT.CURRENTCREDIT AS currentCredit
+            , CONT.CHARGEDCREDIT AS chargedCredit
+            , CONT.CURRENTARREARS AS currentArrea
+            , CONT.LASTCHARGECNT AS lastChargeCnt
+            , CONT.TARIFFINDEX_ID as tariffIndexId
+            , CONT.CASH_POINT AS cashPoint
+            , TARIFF.CODE AS tariffIndex
+            , STAT.DESCR AS status
+        FROM
+        Contract cont
+        LEFT OUTER JOIN Customer cust on cont.CUSTOMER_ID = cust.id
+        LEFT OUTER JOIN (select customer_id,sum(debt_amount) as amount from WS_CMS_DEBTENT where debt_status != 'CANCEL' group by customer_id) debt on cust.customerNo = debt.customer_id
+        LEFT OUTER JOIN Meter meter on cont.meter_id = meter.id
+        LEFT OUTER JOIN Modem modem on meter.modem_id = modem.id
+        LEFT OUTER JOIN Mcu mcu on modem.mcu_id = mcu.id
+        LEFT OUTER JOIN Code stat on cont.status_id = stat.id
+        LEFT OUTER JOIN Code credit on cont.credittype_id = credit.id
+        LEFT OUTER JOIN Code tariff on cont.tariffIndex_id = tariff.id
+        <include refid="base_where_list" />
+    </select>
 
+    <select id="getMeterDeviceModel" resultType="aimirDeviceModelJpo" parameterType="java.lang.String">
+        SELECT
+        DEVICE.CODE AS code
+        , DEVICE.DESCRIPTION AS description
+        , DEVICE.DEVICEVENDOR_ID AS deviceVendorId
+        , DEVICE.IMAGE AS image
+        , DEVICE.MDSIDPATTERN AS mdsIdPattern
+        , DEVICE.NAME AS name
+        , TYPE.DESCR
+        FROM
+        METER
+        LEFT OUTER JOIN MODEM MODEM ON METER.MODEM_ID = MODEM.ID
+        LEFT OUTER JOIN MCU MCU ON MODEM.MCU_ID = MCU.ID
+        LEFT OUTER JOIN DEVICEMODEL DEVICE ON METER.DEVICEMODEL_ID = DEVICE.ID
+        LEFT OUTER JOIN CODE TYPE ON DEVICE.TYPE_ID = TYPE.ID
+        <include refid="base_where_list" />
+    </select>
+
+    <select id="getMeterDeviceVendor" resultType="aimirDeviceVendorJpo" parameterType="java.lang.String">
+        SELECT
+            VENDOR.ID AS id
+            , VENDOR.SUPPLIER_ID AS supplierId
+            , VENDOR.CODE AS code
+            , VENDOR.NAME AS name
+            , VENDOR.ADDRESS AS address
+            , VENDOR.DESCR AS descr
+        FROM
+            METER
+            LEFT OUTER JOIN MODEM MODEM ON METER.MODEM_ID = MODEM.ID
+            LEFT OUTER JOIN MCU MCU ON MODEM.MCU_ID = MCU.ID
+            LEFT OUTER JOIN DEVICEMODEL DEVICE ON METER.DEVICEMODEL_ID = DEVICE.ID
+            LEFT OUTER JOIN DEVICEVENDOR VENDOR ON DEVICE.DEVICEVENDOR_ID = VENDOR.ID
+            LEFT OUTER JOIN CODE TYPE ON DEVICE.TYPE_ID = TYPE.ID
+        <include refid="base_where_list" />
+    </select>
+
+    <select id="getMeterById" resultType="aimirMeterJpo" parameterType="java.lang.String">
+        SELECT
+            METER.MDS_ID as mdsId
+        , METER.IHD_ID AS ihdId
+        , TYPE.CODE AS meterType
+        , STATUS.CODE AS meterStatus
+        FROM
+            METER
+            LEFT OUTER JOIN MODEM MODEM ON METER.MODEM_ID = MODEM.ID
+            LEFT OUTER JOIN CODE TYPE ON METER.METERTYPE_ID = TYPE.ID
+            LEFT OUTER JOIN CODE STATUS ON METER.METER_STATUS = STATUS.ID
+        <include refid="base_where_list" />
     </select>
 </mapper>

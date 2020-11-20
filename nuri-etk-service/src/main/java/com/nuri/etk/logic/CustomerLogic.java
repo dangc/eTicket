@@ -1,6 +1,7 @@
 package com.nuri.etk.logic;
 
 import com.nuri.etk.entity.API.Customer;
+import com.nuri.etk.entity.API.MeterSerial;
 import com.nuri.etk.spec.CustomerService;
 import com.nuri.etk.store.CustomerStore;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,19 @@ public class CustomerLogic implements CustomerService {
 
     @Override
     public Customer getCustomerByNo(String customerNo) {
-        return customerStore.getCustomerByNo(customerNo);
+        Customer customer = new Customer(customerStore.getCustomerByNo(customerNo));
+        if(customer != null){
+            customer.setCode(200);
+        }
+        return customer;
+    }
+
+    @Override
+    public MeterSerial getCustomerByMeter(String customerNo) {
+        MeterSerial meterSerial = new MeterSerial(customerStore.getCustomerByMeter(customerNo));
+        if(meterSerial != null){
+            meterSerial.setCode(200);
+        }
+        return meterSerial;
     }
 }

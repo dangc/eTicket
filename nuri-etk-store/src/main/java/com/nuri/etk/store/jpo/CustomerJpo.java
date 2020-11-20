@@ -17,12 +17,14 @@ public class CustomerJpo {
     private String modemId;
     private String geocode;
 
-    public CustomerJpo(Integer code, String customerId, String meterModel, String modemId, String geocode) {
-        this.code = code;
-        this.customerId = customerId;
-        this.meterModel = meterModel;
-        this.modemId = modemId;
-        this.geocode = geocode;
+    public CustomerJpo(Customer customer) {
+        if(customer != null){
+            this.code = customer.getCode();
+            this.customerId = customer.getCustomerId();
+            this.meterModel = customer.getMeterModel();
+            this.modemId = customer.getModemId();
+            this.geocode = customer.getGeocode();
+        }
     }
 
     public Customer toDomain() {

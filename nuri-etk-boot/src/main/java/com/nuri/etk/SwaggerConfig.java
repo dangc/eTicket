@@ -26,7 +26,7 @@ public class SwaggerConfig {
     @Bean
     public Docket api() {
         version = "v2.0";
-        title = "E-Ticket (DEX ↔ E-Vending) API " + version;
+        title = "E-Ticket (E-Vending ↔ HES) API " + version;
         
         List<ResponseMessage> responseMessages = new ArrayList<>();
         responseMessages.add(new ResponseMessageBuilder()

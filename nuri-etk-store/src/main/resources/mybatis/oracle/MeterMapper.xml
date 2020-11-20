@@ -12,7 +12,7 @@
     <sql id="base_where_list">
         <where>
             <if test="meterId != null" >
-                AND meter.MDS_ID = #{meterId}
+                AND METER.MDS_ID = #{meterId}
             </if>
         </where>
     </sql>
@@ -39,6 +39,41 @@
             LEFT OUTER JOIN Code stat on cont.status_id = stat.id
             LEFT OUTER JOIN Code credit on cont.credittype_id = credit.id
             LEFT OUTER JOIN Code tariff on cont.tariffIndex_id = tariff.id
+        <include refid="base_where_list" />
+    </select>
+
+    <select id="getTargetByMeter" resultType="targetByMeterJpo" parameterType="java.lang.String">
+        SELECT
+            CONT.CONTRACT_NUMBER AS geocode
+            , CONT.CURRENTCREDIT AS credit
+            , CUST.ADDRESS2 AS address
+            , CONT.LASTTOKENDATE AS lastChargeDate
+            , CUST.CUSTOMERNO AS customerId
+            , CUST.NAME AS customerName
+            , CUST.MOBILENUMBER AS mobileNumber
+            , STAT.DESCR AS supplyState
+            , CONT.CURRENTARREARS AS arrears
+            , DEBT.AMOUNT AS debtTotal
+        FROM
+            CONTRACT CONT
+            LEFT OUTER JOIN CUSTOMER CUST ON CONT.CUSTOMER_ID = CUST.ID
+            LEFT OUTER JOIN (SELECT CUSTOMER_ID,SUM(DEBT_AMOUNT) AS AMOUNT FROM WS_CMS_DEBTENT WHERE DEBT_STATUS != 'CANCEL' GROUP BY CUSTOMER_ID) DEBT ON CUST.CUSTOMERNO = DEBT.CUSTOMER_ID
+            LEFT OUTER JOIN METER METER ON CONT.METER_ID = METER.ID
+            LEFT OUTER JOIN MODEM MODEM ON METER.MODEM_ID = MODEM.ID
+            LEFT OUTER JOIN MCU MCU ON MODEM.MCU_ID = MCU.ID
+            LEFT OUTER JOIN CODE STAT ON CONT.STATUS_ID = STAT.ID
+        <include refid="base_where_list" />
+    </select>
+
+    <select id="getRegisterInfoByMeter" resultType="registerInfoByMeterJpo" parameterType="java.lang.String">
+        SELECT
+            METER.MDS_ID AS METERID
+            , CUST.NAME AS customerName
+            , CUST.MOBILENUMBER AS mobileNumber
+        FROM
+            CONTRACT CONT
+            LEFT OUTER JOIN CUSTOMER CUST ON CONT.CUSTOMER_ID = CUST.ID
+            LEFT OUTER JOIN METER METER ON CONT.METER_ID = METER.ID
         <include refid="base_where_list" />
     </select>
 </mapper>

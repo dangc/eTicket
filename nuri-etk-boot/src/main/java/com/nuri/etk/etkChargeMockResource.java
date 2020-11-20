@@ -5,6 +5,7 @@ import com.nuri.etk.entity.API.ChargeCallback;
 import com.nuri.etk.entity.pojo.ChargeCancelInfo;
 import com.nuri.etk.entity.pojo.ChargeInfo;
 import com.nuri.etk.facade.flow.ChargeFlowFacade;
+import com.nuri.etk.spec.ChargeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -20,8 +21,13 @@ import java.util.concurrent.Executors;
 @Api(description = "충전 요청/취소 Resource")
 @RequestMapping("/v2.0/meters")
 public class etkChargeMockResource implements ChargeFlowFacade {
+    private ChargeService chargeService;
     int threadPoolSize = 5;
     int _timeout = 300;
+
+    public etkChargeMockResource(ChargeService chargeService) {
+        this.chargeService = chargeService;
+    }
 
     @Override
     @ApiOperation(value = "충전 요청", notes = "충전 요청 API")
@@ -37,25 +43,7 @@ public class etkChargeMockResource implements ChargeFlowFacade {
         System.out.println("######## Charge parameter {meterId} : " + meterId + " ########");
         System.out.println("######## Charge parameter {chargeInfo} : " + chargeInfo.toString() + " ########");
 
-        Charge charge = new Charge();
-        charge = charge.meterCharge(meterId, headers, chargeInfo);
-
-        if("true".equals(charge.getResultDetail())){
-            // async = true일 시 callback 호출
-            if(async){
-                ExecutorService executorService = Executors.newFixedThreadPool(threadPoolSize);
-                executorService.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        for(int i = 0; i < chargeInfo.getDebt().size(); i++) {
-                            executorService.execute((Runnable) chargeCallback(meterId, headers, chargeInfo));
-                        }
-                    }
-                });
-            }
-        }
-
-        return charge;
+        return chargeService.meterCharge(meterId, headers, chargeInfo);
     }
 
     @Override

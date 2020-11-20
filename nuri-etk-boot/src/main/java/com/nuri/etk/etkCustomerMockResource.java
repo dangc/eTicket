@@ -41,6 +41,6 @@ public class etkCustomerMockResource implements CustomerFlowFacade {
     @GetMapping(value={"/customers/{customerNo}/meters"})
     public MeterSerial getCustomerByMeter(@PathVariable String customerNo) {
         System.out.println("######## getCustomerByMeter parameter {customerNo} : " + customerNo + " ########");
-        return MeterSerial.getMeterByGC(customerNo);
+        return customerService.getCustomerByMeter(customerNo);
     }
 }
