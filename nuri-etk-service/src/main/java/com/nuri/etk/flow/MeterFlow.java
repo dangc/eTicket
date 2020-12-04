@@ -1,17 +1,12 @@
 package com.nuri.etk.flow;
 
-import com.nuri.etk.entity.API.Dcu;
 import com.nuri.etk.entity.API.Meter;
 import com.nuri.etk.entity.API.RegisterInfoByMeter;
 import com.nuri.etk.entity.API.TargetByMeter;
-import com.nuri.etk.facade.flow.DcuFlowFacade;
 import com.nuri.etk.facade.flow.MeterFlowFacade;
 import com.nuri.etk.spec.MeterService;
-import com.nuri.etk.spec.SampleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional
