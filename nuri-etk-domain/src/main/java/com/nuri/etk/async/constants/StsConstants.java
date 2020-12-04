@@ -1,4 +1,4 @@
-package com.nuri.etk.entity.aimir;
+package com.nuri.etk.async.constants;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

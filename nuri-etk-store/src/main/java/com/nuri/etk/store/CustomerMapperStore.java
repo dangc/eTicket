@@ -1,14 +1,11 @@
 package com.nuri.etk.store;
 
-import com.nuri.etk.entity.API.Customer;
+import com.nuri.etk.entity.API.ChargeHistory;
 import com.nuri.etk.entity.API.MeterSerial;
 import com.nuri.etk.store.jpo.CustomerJpo;
 import com.nuri.etk.store.jpo.MeterSerialJpo;
 import com.nuri.etk.store.mapper.CustomerMapper;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class CustomerMapperStore implements CustomerStore {
@@ -20,7 +17,7 @@ public class CustomerMapperStore implements CustomerStore {
     }
 
     @Override
-    public Customer getCustomerByNo(String customerNo) {
+    public ChargeHistory.Customer getCustomerByNo(String customerNo) {
         CustomerJpo customerJpo = null;
         try {
             customerJpo = customerMapper.getCustomerByNo(customerNo);

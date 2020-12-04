@@ -6,6 +6,7 @@ import com.nuri.etk.store.jpo.PaymentInfoJpo;
 import com.nuri.etk.store.mapper.ChargeHistoryMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,5 +28,16 @@ public class ChargeHistoryMapperStore implements ChargeHistoryStore {
             e.printStackTrace();
         }
         return chargeLastHistories.stream().map(PaymentInfoJpo::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PaymentInfo> chargeHistory(String meterId, String startDate, String endDate, String paymentType, String listCount, String pageCount) {
+        List<PaymentInfoJpo> chargeHistories = null;
+        try {
+            chargeHistories = chargeHistoryMapper.chargeHistory(meterId, startDate, endDate, paymentType, listCount, pageCount);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return chargeHistories.stream().map(PaymentInfoJpo::toDomain).collect(Collectors.toList());
     }
 }

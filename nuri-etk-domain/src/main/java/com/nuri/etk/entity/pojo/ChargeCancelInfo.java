@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ChargeCancelInfo {
 
-    @ApiModelProperty(value = "operatorId", example = "ecgvendor")
+    @ApiModelProperty(value = "operatorId", example = "")
     private String operatorId;
 
     @ApiModelProperty(value = "chargeId", example = "")

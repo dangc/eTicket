@@ -60,6 +60,6 @@ public class etkChargeHistoryMockResource implements ChargeHistoryFlowFacade {
 
         // startDate, endDate 데이터 검증
 
-        return ChargeHistory.chargeHistory(meterId, startDate, endDate, paymentType, listCount, pageCount);
+        return chargeHistoryService.chargeHistory(meterId, startDate, endDate, paymentType, listCount, pageCount);
     }
 }

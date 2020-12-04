@@ -1,7 +1,7 @@
 package com.nuri.etk.store.jpo;
 
 
-import com.nuri.etk.entity.API.Customer;
+import com.nuri.etk.entity.API.ChargeHistory;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +17,7 @@ public class CustomerJpo {
     private String modemId;
     private String geocode;
 
-    public CustomerJpo(Customer customer) {
+    public CustomerJpo(ChargeHistory.Customer customer) {
         if(customer != null){
             this.code = customer.getCode();
             this.customerId = customer.getCustomerId();
@@ -27,8 +27,8 @@ public class CustomerJpo {
         }
     }
 
-    public Customer toDomain() {
-        Customer customer = new Customer();
+    public ChargeHistory.Customer toDomain() {
+        ChargeHistory.Customer customer = new ChargeHistory.Customer();
         customer.setCode(this.code);
         customer.setCustomerId(this.customerId);
         customer.setMeterModel(this.meterModel);

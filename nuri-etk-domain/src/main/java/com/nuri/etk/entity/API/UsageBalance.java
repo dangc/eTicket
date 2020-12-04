@@ -20,6 +20,7 @@ public class UsageBalance {
     private String usageUnit;
     private Double balance;
     private String creditUnit;
+    private Double oweCredit;
 
     public UsageBalance(UsageBalance usageBalance) {
         if(usageBalance != null){
@@ -30,6 +31,7 @@ public class UsageBalance {
             this.usageUnit = usageBalance.getUsageUnit();
             this.creditUnit = usageBalance.getCreditUnit();
             this.balance = usageBalance.getBalance();
+            this.oweCredit = usageBalance.getOweCredit();
         }
     }
 }

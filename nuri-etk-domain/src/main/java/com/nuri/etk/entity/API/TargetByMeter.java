@@ -22,13 +22,15 @@ public class TargetByMeter {
     private String mobileNumber;
     private String supplyState;
     private Double credit;
+    private Double oweCredit;
     private Double arrears;
     private Double debtTotal;
 
-    public TargetByMeter(Integer code, String geocode, Double credit, String address, String lastChargeDate, String customerId, String customerName, String mobileNumber, String supplyState, Double arrears, Double debtTotal) {
+    public TargetByMeter(Integer code, String geocode, Double credit, Double oweCredit, String address, String lastChargeDate, String customerId, String customerName, String mobileNumber, String supplyState, Double arrears, Double debtTotal) {
         this.code = code;
         this.geocode = geocode;
         this.credit = credit;
+        this.oweCredit = oweCredit;
         this.address = address;
         this.lastChargeDate = lastChargeDate;
         this.customerId = customerId;
@@ -44,6 +46,7 @@ public class TargetByMeter {
             this.code = targetByMeter.getCode();
             this.geocode = targetByMeter.getGeocode();
             this.credit = targetByMeter.getCredit();
+            this.oweCredit = targetByMeter.getOweCredit();
             this.address = targetByMeter.getAddress();
             this.lastChargeDate = targetByMeter.getLastChargeDate();
             this.customerId = targetByMeter.getCustomerId();
@@ -67,6 +70,7 @@ public class TargetByMeter {
                 ", mobileNumber='" + mobileNumber + '\'' +
                 ", supplyState='" + supplyState + '\'' +
                 ", credit=" + credit +
+                ", oweCredit=" + oweCredit +
                 ", arrears=" + arrears +
                 ", debtTotal=" + debtTotal +
                 '}';

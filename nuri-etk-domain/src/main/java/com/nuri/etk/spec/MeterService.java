@@ -7,7 +7,7 @@ import com.nuri.etk.entity.API.TargetByMeter;
 import java.util.List;
 
 public interface MeterService {
-    List<Meter> getMeterInfo(String meterId);
+    Meter getMeterInfo(String meterId);
     TargetByMeter getTargetByMeter(String meterId);
     RegisterInfoByMeter getRegisterInfoByMeter(String meterId);
 }

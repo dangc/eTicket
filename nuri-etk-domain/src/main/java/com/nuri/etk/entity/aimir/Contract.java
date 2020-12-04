@@ -43,7 +43,9 @@ public class Contract {
 	private Customer customer;
 	
 	private String customerId;
-	
+
+	private String customerName;
+
 	private Supplier supplier;
 	
 	private Integer supplierId;

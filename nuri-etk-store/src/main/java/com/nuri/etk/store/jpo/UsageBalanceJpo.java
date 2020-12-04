@@ -21,6 +21,7 @@ public class UsageBalanceJpo {
     private String usageUnit;
     private Double balance;
     private String creditUnit;
+    private Double oweCredit;
 
     public UsageBalanceJpo(UsageBalance usageBalance) {
         if(usageBalance != null){
@@ -31,6 +32,7 @@ public class UsageBalanceJpo {
             this.usageUnit = usageBalance.getUsageUnit();
             this.creditUnit = usageBalance.getCreditUnit();
             this.balance = usageBalance.getBalance();
+            this.oweCredit = usageBalance.getOweCredit();
         }
     }
 
@@ -43,6 +45,7 @@ public class UsageBalanceJpo {
         usageBalance.setUsageUnit(this.usageUnit);
         usageBalance.setBalance(this.balance);
         usageBalance.setCreditUnit(this.creditUnit);
+        usageBalance.setOweCredit(this.oweCredit);
         return usageBalance;
     }
 }

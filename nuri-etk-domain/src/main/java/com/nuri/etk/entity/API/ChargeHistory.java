@@ -11,6 +11,7 @@ import lombok.Setter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 @Getter
@@ -20,9 +21,9 @@ public class ChargeHistory {
 
     private Integer code;
     private Integer totalCount;
-    private ArrayList<PaymentInfo> chargeLogs;
+    private List<PaymentInfo> chargeLogs;
 
-    public ChargeHistory(Integer code, Integer totalCount, ArrayList<PaymentInfo> chargeLogs) {
+    public ChargeHistory(Integer code, Integer totalCount, List<PaymentInfo> chargeLogs) {
         this.code = code;
         this.totalCount = totalCount;
         this.chargeLogs = chargeLogs;
@@ -72,6 +73,36 @@ public class ChargeHistory {
             e.printStackTrace();
         }finally {
             return chargeHistory;
+        }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class Customer {
+
+    //    private String meterId;
+        private Integer code;
+        private String customerId;
+        private String meterModel;
+        private String modemId;
+        private String geocode;
+
+        public Customer(Integer code, String customerId, String meterModel, String modemId, String geocode) {
+            this.code = code;
+            this.customerId = customerId;
+            this.meterModel = meterModel;
+            this.modemId = modemId;
+            this.geocode = geocode;
+        }
+        public Customer(Customer customer) {
+            if(customer != null){
+                this.code = customer.getCode();
+                this.customerId = customer.getCustomerId();
+                this.meterModel = customer.getMeterModel();
+                this.modemId = customer.getModemId();
+                this.geocode = customer.getGeocode();
+            }
         }
     }
 }

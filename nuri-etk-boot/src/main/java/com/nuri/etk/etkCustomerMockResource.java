@@ -1,6 +1,6 @@
 package com.nuri.etk;
 
-import com.nuri.etk.entity.API.Customer;
+import com.nuri.etk.entity.API.ChargeHistory;
 import com.nuri.etk.entity.API.MeterSerial;
 import com.nuri.etk.facade.flow.CustomerFlowFacade;
 import com.nuri.etk.spec.CustomerService;
@@ -27,7 +27,7 @@ public class etkCustomerMockResource implements CustomerFlowFacade {
             @ApiImplicitParam(name = "customerNo", value = "고객 번호", required = true, dataType = "string", paramType = "path", defaultValue = "")
     })
     @GetMapping(value={"/customers/{customerNo}"})
-    public Customer getCustomerByNo(@PathVariable String customerNo) {
+    public ChargeHistory.Customer getCustomerByNo(@PathVariable String customerNo) {
         System.out.println("######## getCustomerByNo parameter {customerNo} : " + customerNo + " ########");
 //        return Customer.getCustomerByNo(customerNo);
         return customerService.getCustomerByNo(customerNo);

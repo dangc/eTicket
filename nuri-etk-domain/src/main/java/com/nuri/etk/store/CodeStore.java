@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface CodeStore {
 
-    Code getkeyType(Integer payTypeId);
+    Code getkeyType(String payTypeId);
 }

@@ -2,23 +2,26 @@ package com.nuri.etk.store;
 
 import com.nuri.etk.entity.aimir.*;
 import com.nuri.etk.entity.pojo.ChargeInfo;
-import com.nuri.etk.store.jpo.aimir.ContractJpo;
-import com.nuri.etk.store.jpo.aimir.DeviceModelJpo;
-import com.nuri.etk.store.jpo.aimir.DeviceVendorJpo;
-import com.nuri.etk.store.jpo.aimir.MeterJpo;
+import com.nuri.etk.entity.pojo.PaymentInfo;
+import com.nuri.etk.store.jpo.PaymentInfoJpo;
+import com.nuri.etk.store.jpo.aimir.*;
 import com.nuri.etk.store.mapper.ChargeMapper;
+import com.nuri.etk.store.mapper.MeterMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class ChargeMapperStore implements ChargeStore {
 
     private final ChargeMapper chargeMapper;
+    private final MeterMapper meterMapper;
 
-    public ChargeMapperStore(ChargeMapper chargeMapper) {
+    public ChargeMapperStore(ChargeMapper chargeMapper, MeterMapper meterMapper) {
         this.chargeMapper = chargeMapper;
+        this.meterMapper = meterMapper;
     }
 
     @Override
@@ -32,19 +35,38 @@ public class ChargeMapperStore implements ChargeStore {
         DeviceVendorJpo deviceVendorJpo = null;
         DeviceModelJpo deviceModelJpo = null;
         MeterJpo meterJpo = null;
+        ModemJpo modemJpo = null;
+        ContractJpo contractJpo = null;
 
         try {
             deviceVendorJpo = chargeMapper.getMeterDeviceVendor(meterId);
             deviceModelJpo = chargeMapper.getMeterDeviceModel(meterId);
             meterJpo = chargeMapper.getMeterById(meterId);
+            modemJpo = chargeMapper.getMeterModem(meterId);
+            contractJpo = chargeMapper.getContract(meterId);
         } catch (Exception e) {
             e.printStackTrace();
         }
         meter = meterJpo.toDomain();
         deviceModelJpo.setDeviceVendor(deviceVendorJpo.toDomain());
         meter.setModel(deviceModelJpo.toDomain());
+        meter.setModem(modemJpo.toDomain());
+        meter.setContract(contractJpo.toDomain());
 
         return meter;
+    }
+
+    @Override
+    public MCU getMCU(String meterId) {
+        MCUJpo mcuJpo = null;
+
+        try {
+            mcuJpo = chargeMapper.getMCU(meterId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return mcuJpo.toDomain();
     }
 
     @Override
@@ -126,5 +148,42 @@ public class ChargeMapperStore implements ChargeStore {
     @Override
     public void addSTSlog(EcgSTSLog stslog) {
 
+    }
+
+    @Override
+    public APICallBackHistory getCallbackHistory(String uuid) {
+        return null;
+    }
+
+    @Override
+    public APICallBackHistory getAPICallBackHistory(String uuid) {
+        return null;
+    }
+
+    @Override
+    public PrepaymentLog getPrepayLog(String id, String meterId) {
+        PrepaymentLogJpo prepaymentLog = null;
+        try {
+            prepaymentLog = chargeMapper.getPrepayLog(id, meterId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return prepaymentLog.toDomain();
+    }
+
+    @Override
+    public Contract getContractById(Integer contractId) {
+        ContractJpo contractJpo = null;
+        try {
+            contractJpo = chargeMapper.getContractById(contractId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return contractJpo.toDomain();
+    }
+
+    @Override
+    public Supplier getSupplier(Integer supplierId) {
+        return null;
     }
 }

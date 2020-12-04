@@ -30,6 +30,8 @@
         <typeAlias alias="aimirDeviceModelJpo" type="com.nuri.etk.store.jpo.aimir.DeviceModelJpo"/>
         <typeAlias alias="aimirDeviceVendorJpo" type="com.nuri.etk.store.jpo.aimir.DeviceVendorJpo"/>
         <typeAlias alias="aimirMeterJpo" type="com.nuri.etk.store.jpo.aimir.MeterJpo"/>
+        <typeAlias alias="aimirModemJpo" type="com.nuri.etk.store.jpo.aimir.ModemJpo"/>
+        <typeAlias alias="aimirPrepaymentLogJpo" type="com.nuri.etk.store.jpo.aimir.PrepaymentLogJpo"/>
     </typeAliases>
 
     <mappers>

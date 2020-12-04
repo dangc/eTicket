@@ -9,4 +9,6 @@ import java.util.List;
 @Mapper
 public interface ChargeHistoryMapper {
     List<PaymentInfoJpo> chargeLast(String meterId);
+
+    List<PaymentInfoJpo> chargeHistory(String meterId, String startDate, String endDate, String paymentType, String listCount, String pageCount);
 }

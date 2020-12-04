@@ -24,11 +24,11 @@ public class MeterFlow implements MeterFlowFacade {
     }
 
     @Override
-    public List<Meter> getMeterInfo(String meterId) {
+    public Meter getMeterInfo(String meterId) {
         return meterService.getMeterInfo(meterId);
     }
 
-    @Override
+    /*@Override
     public Meter getMeterList(String customerNo) {
         return null;
     }
@@ -36,7 +36,7 @@ public class MeterFlow implements MeterFlowFacade {
     @Override
     public Meter getMeterByGC(String supplier, String geocode) {
         return null;
-    }
+    }*/
 
     @Override
     public TargetByMeter getTargetByMeter(String meterId) {

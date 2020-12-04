@@ -6,17 +6,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class ChargeInfo {
 
-    @ApiModelProperty(value = "utility", example = "ECG")
+    @ApiModelProperty(value = "utility", example = "")
     private String utility;
 
-    @ApiModelProperty(value = "operatorId", example = "ecgvendor")
+    @ApiModelProperty(value = "operatorId", example = "")
     private String operatorId;
 
     @ApiModelProperty(value = "chargeId", example = "")
@@ -31,9 +31,9 @@ public class ChargeInfo {
     @ApiModelProperty(value = "chargedArrears", example = "")
     private String chargedArrears;
 
-    private ArrayList<ArrearsDebt> debt;
+    private List<ArrearsDebt> debt;
 
-    public ChargeInfo(String utility, String operatorId, String chargeId, String paidAmount, String chargedCredit, String chargedArrears, ArrayList<ArrearsDebt> debt) {
+    public ChargeInfo(String utility, String operatorId, String chargeId, String paidAmount, String chargedCredit, String chargedArrears, List<ArrearsDebt> debt) {
         this.utility = utility;
         this.operatorId = operatorId;
         this.chargeId = chargeId;

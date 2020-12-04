@@ -19,23 +19,15 @@
 
     <select id="getMeterInfo" resultType="meterJpo" parameterType="java.lang.String">
         SELECT
-            meter.MDS_ID AS meterId
-            , cust.customerNo AS customerId
-            , cust.name AS customerName
-            , cont.contract_Number AS geocode
-            , cust.address2 AS address
-            , cont.lastTokenDate AS lastChargeDate
-            , stat.descr AS supplyState
-            , cont.currentCredit AS credit
-            , cont.currentArrears AS arrears
-            , debt.amount AS debtTotal
+            Meter.MDS_ID AS meterId
+            , Modem.DEVICE_SERIAL AS modemId
         FROM
             Contract cont
             LEFT OUTER JOIN Customer cust on cont.CUSTOMER_ID = cust.id
             LEFT OUTER JOIN (select customer_id,sum(debt_amount) as amount from WS_CMS_DEBTENT where debt_status != 'CANCEL' group by customer_id) debt on cust.customerNo = debt.customer_id
-            LEFT OUTER JOIN Meter meter on cont.meter_id = meter.id
-            LEFT OUTER JOIN Modem modem on meter.modem_id = modem.id
-            LEFT OUTER JOIN Mcu mcu on modem.mcu_id = mcu.id
+            LEFT OUTER JOIN Meter on cont.meter_id = meter.id
+            LEFT OUTER JOIN Modem on meter.modem_id = modem.id
+            LEFT OUTER JOIN Mcu on modem.mcu_id = mcu.id
             LEFT OUTER JOIN Code stat on cont.status_id = stat.id
             LEFT OUTER JOIN Code credit on cont.credittype_id = credit.id
             LEFT OUTER JOIN Code tariff on cont.tariffIndex_id = tariff.id
@@ -46,6 +38,7 @@
         SELECT
             CONT.CONTRACT_NUMBER AS geocode
             , CONT.CURRENTCREDIT AS credit
+            , CONT.OWE_CREDIT AS oweCredit
             , CUST.ADDRESS2 AS address
             , CONT.LASTTOKENDATE AS lastChargeDate
             , CUST.CUSTOMERNO AS customerId

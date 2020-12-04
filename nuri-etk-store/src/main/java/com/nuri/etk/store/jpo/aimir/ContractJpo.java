@@ -43,7 +43,9 @@ public class ContractJpo {
 	private Customer customer;
 	
 	private String customerId;
-	
+
+	private String customerName;
+
 	private Supplier supplier;
 	
 	private Integer supplierId;
@@ -221,6 +223,7 @@ public class ContractJpo {
 		contract.setId(this.id);
 		contract.setContractNumber(this.contractNumber);
 		contract.setCustomerId(this.customerId);
+		contract.setCustomerName(this.customerName);
 		contract.setLastTokenDate(this.lastTokenDate);
 		contract.setCurrentCredit(this.currentCredit);
 		contract.setChargedCredit(this.chargedCredit);

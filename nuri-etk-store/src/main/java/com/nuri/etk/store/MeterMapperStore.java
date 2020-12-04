@@ -1,6 +1,7 @@
 package com.nuri.etk.store;
 
 import com.nuri.etk.entity.API.Meter;
+import com.nuri.etk.entity.API.Meters;
 import com.nuri.etk.entity.API.RegisterInfoByMeter;
 import com.nuri.etk.entity.API.TargetByMeter;
 import com.nuri.etk.store.jpo.MeterJpo;
@@ -22,7 +23,7 @@ public class MeterMapperStore implements MeterStore {
     }
 
     @Override
-    public List<Meter> getMeterInfo(String meterId) {
+    public List<Meters> getMeterInfo(String meterId) {
         List<MeterJpo> meterJpo = null;
         try {
             meterJpo = meterMapper.getMeterInfo(meterId);

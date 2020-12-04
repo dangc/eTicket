@@ -11,7 +11,40 @@
 
     <sql id="base_where_list">
         <where>
-            <if test="meterId != null" >
+           <!-- <if test="sysId != null" >
+                AND MCU.SYS_ID = #{sysId}
+            </if>
+            <if test="deviceSerial != null" >
+                AND MODEM.DEVICE_SERIAL = #{deviceSerial}
+            </if>-->
+            <if test='meterId != null and meterId != ""' >
+                AND METER.MDS_ID = #{meterId}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="base_where_list_contract">
+        <where>
+            <if test='contractId != null and contractId != ""' >
+                AND cont.ID = #{contractId}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="base_where_list_mcu">
+        <where>
+            <if test='sysId != null' >
+                AND MCU.SYS_ID = #{sysId}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="base_where_prepayLog">
+        <where>
+            <if test='id != null and id != ""' >
+                AND PREPAY.LASTTOKENID = #{id}
+            </if>
+            <if test='meterId != null and meterId != ""' >
                 AND METER.MDS_ID = #{meterId}
             </if>
         </where>
@@ -22,6 +55,7 @@
             CONT.ID AS id
             , CONT.CONTRACT_NUMBER AS contractNumber
             , CUST.CUSTOMERNO AS customerId
+            , CUST.NAME AS customerName
             , CONT.LASTTOKENDATE AS lastTokenDate
             , CONT.CURRENTCREDIT AS currentCredit
             , CONT.CHARGEDCREDIT AS chargedCredit
@@ -35,13 +69,41 @@
         Contract cont
         LEFT OUTER JOIN Customer cust on cont.CUSTOMER_ID = cust.id
         LEFT OUTER JOIN (select customer_id,sum(debt_amount) as amount from WS_CMS_DEBTENT where debt_status != 'CANCEL' group by customer_id) debt on cust.customerNo = debt.customer_id
-        LEFT OUTER JOIN Meter meter on cont.meter_id = meter.id
-        LEFT OUTER JOIN Modem modem on meter.modem_id = modem.id
-        LEFT OUTER JOIN Mcu mcu on modem.mcu_id = mcu.id
+        LEFT OUTER JOIN Meter on cont.meter_id = meter.id
+        LEFT OUTER JOIN Modem on meter.modem_id = modem.id
+        LEFT OUTER JOIN Mcu on modem.mcu_id = mcu.id
         LEFT OUTER JOIN Code stat on cont.status_id = stat.id
         LEFT OUTER JOIN Code credit on cont.credittype_id = credit.id
         LEFT OUTER JOIN Code tariff on cont.tariffIndex_id = tariff.id
         <include refid="base_where_list" />
+    </select>
+
+    <select id="getContractById" resultType="aimirContractJpo" parameterType="java.lang.Integer">
+        SELECT
+        CONT.ID AS id
+        , CONT.CONTRACT_NUMBER AS contractNumber
+        , CUST.CUSTOMERNO AS customerId
+        , CUST.NAME AS customerName
+        , CONT.LASTTOKENDATE AS lastTokenDate
+        , CONT.CURRENTCREDIT AS currentCredit
+        , CONT.CHARGEDCREDIT AS chargedCredit
+        , CONT.CURRENTARREARS AS currentArrea
+        , CONT.LASTCHARGECNT AS lastChargeCnt
+        , CONT.TARIFFINDEX_ID as tariffIndexId
+        , CONT.CASH_POINT AS cashPoint
+        , TARIFF.CODE AS tariffIndex
+        , STAT.DESCR AS status
+        FROM
+        Contract cont
+        LEFT OUTER JOIN Customer cust on cont.CUSTOMER_ID = cust.id
+        LEFT OUTER JOIN (select customer_id,sum(debt_amount) as amount from WS_CMS_DEBTENT where debt_status != 'CANCEL' group by customer_id) debt on cust.customerNo = debt.customer_id
+        LEFT OUTER JOIN Meter on cont.meter_id = meter.id
+        LEFT OUTER JOIN Modem on meter.modem_id = modem.id
+        LEFT OUTER JOIN Mcu on modem.mcu_id = mcu.id
+        LEFT OUTER JOIN Code stat on cont.status_id = stat.id
+        LEFT OUTER JOIN Code credit on cont.credittype_id = credit.id
+        LEFT OUTER JOIN Code tariff on cont.tariffIndex_id = tariff.id
+        <include refid="base_where_list_contract" />
     </select>
 
     <select id="getMeterDeviceModel" resultType="aimirDeviceModelJpo" parameterType="java.lang.String">
@@ -55,8 +117,8 @@
         , TYPE.DESCR
         FROM
         METER
-        LEFT OUTER JOIN MODEM MODEM ON METER.MODEM_ID = MODEM.ID
-        LEFT OUTER JOIN MCU MCU ON MODEM.MCU_ID = MCU.ID
+        LEFT OUTER JOIN MODEM ON METER.MODEM_ID = MODEM.ID
+        LEFT OUTER JOIN MCU ON MODEM.MCU_ID = MCU.ID
         LEFT OUTER JOIN DEVICEMODEL DEVICE ON METER.DEVICEMODEL_ID = DEVICE.ID
         LEFT OUTER JOIN CODE TYPE ON DEVICE.TYPE_ID = TYPE.ID
         <include refid="base_where_list" />
@@ -72,8 +134,8 @@
             , VENDOR.DESCR AS descr
         FROM
             METER
-            LEFT OUTER JOIN MODEM MODEM ON METER.MODEM_ID = MODEM.ID
-            LEFT OUTER JOIN MCU MCU ON MODEM.MCU_ID = MCU.ID
+            LEFT OUTER JOIN MODEM ON METER.MODEM_ID = MODEM.ID
+            LEFT OUTER JOIN MCU ON MODEM.MCU_ID = MCU.ID
             LEFT OUTER JOIN DEVICEMODEL DEVICE ON METER.DEVICEMODEL_ID = DEVICE.ID
             LEFT OUTER JOIN DEVICEVENDOR VENDOR ON DEVICE.DEVICEVENDOR_ID = VENDOR.ID
             LEFT OUTER JOIN CODE TYPE ON DEVICE.TYPE_ID = TYPE.ID
@@ -83,14 +145,65 @@
     <select id="getMeterById" resultType="aimirMeterJpo" parameterType="java.lang.String">
         SELECT
             METER.MDS_ID as mdsId
-        , METER.IHD_ID AS ihdId
-        , TYPE.CODE AS meterType
-        , STATUS.CODE AS meterStatus
+            , METER.IHD_ID AS ihdId
+            , TYPE.CODE AS meterType
+            , STATUS.CODE AS meterStatus
         FROM
             METER
-            LEFT OUTER JOIN MODEM MODEM ON METER.MODEM_ID = MODEM.ID
+            LEFT OUTER JOIN MODEM ON METER.MODEM_ID = MODEM.ID
             LEFT OUTER JOIN CODE TYPE ON METER.METERTYPE_ID = TYPE.ID
             LEFT OUTER JOIN CODE STATUS ON METER.METER_STATUS = STATUS.ID
         <include refid="base_where_list" />
+    </select>
+
+    <select id="getMeterModem" resultType="aimirModemJpo" parameterType="java.lang.String">
+        SELECT
+            MODEM.DEVICE_SERIAL AS deviceSerial
+        FROM
+            METER
+            LEFT OUTER JOIN MODEM ON METER.MODEM_ID = MODEM.ID
+            LEFT OUTER JOIN CODE TYPE ON METER.METERTYPE_ID = TYPE.ID
+            LEFT OUTER JOIN CODE STATUS ON METER.METER_STATUS = STATUS.ID
+        <include refid="base_where_list" />
+    </select>
+
+    <select id="getMeterMCU" resultType="aimirModemJpo" parameterType="java.lang.String">
+        SELECT
+            MCU.DEVICEMODEL_ID AS deviceSerial
+            MCU.SYS_ID AS sysID
+            , PROTOCOL.NAME AS protocolType
+        FROM
+            METER
+            LEFT OUTER JOIN MODEM ON METER.MODEM_ID = MODEM.ID
+            LEFT OUTER JOIN MCU ON MCU.ID = MODEM.MCU_ID
+            LEFT OUTER JOIN CODE PROTOCOL ON MCU.PROTOCOL_TYPE = PROTOCOL.ID
+        <include refid="base_where_list_mcu" />
+    </select>
+
+    <select id="getPrepayLog" resultType="aimirPrepaymentLogJpo" parameterType="java.lang.String">
+        SELECT
+            METER.MDS_ID AS meterId
+            , PREPAY.LASTTOKENDATE AS lastTokenDate
+<!--            , PREPAY.CHARGEDARREARS + PREPAY.CHARGEDCREDIT + DEBT.CHARGEDDEBT AS paidAmount-->
+            , PREPAY.CHARGEDCREDIT AS chargedCredit
+            , PREPAY.PRE_BALANCE AS preBalance
+            , PREPAY.BALANCE AS balance
+            , PREPAY.LASTTOKENID AS lastTokenId
+            , PREPAY.DAYS_FROM_CHARGE AS daysFromCharge
+            , PREPAY.TOKEN AS token
+            , PREPAY.CANCEL_TOKEN AS cancelToken
+            , PREPAY.CANCEL_DATE AS cancelDate
+            , PREPAY.CANCEL_REASON AS cancelReason
+            , PREPAY.CHARGEDARREARS AS chargedArrears
+            , PREPAY.IS_CANCELED AS isCanceled
+            , PREPAY.CONTRACT_ID AS contractId
+        FROM
+        CONTRACT CONT
+        LEFT OUTER JOIN METER METER ON CONT.METER_ID = METER.ID
+        LEFT OUTER JOIN PREPAYMENTLOG PREPAY ON PREPAY.CONTRACT_ID = CONT.ID
+        LEFT OUTER JOIN DEBTLOG DEBT ON PREPAY.ID = DEBT.PREPAYMENTLOG_ID
+        LEFT OUTER JOIN OPERATOR OP ON PREPAY.OPERATOR_ID = OP.ID
+        LEFT OUTER JOIN CODE PAYTYPE ON PREPAY.PAY_TYPE_CODE = PAYTYPE.ID
+        <include refid="base_where_prepayLog" />
     </select>
 </mapper>

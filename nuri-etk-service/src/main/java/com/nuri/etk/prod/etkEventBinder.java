@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@EnableBinding(SampleEventSource.class)
-public class SampleEventBinder implements EventProducer {
+@EnableBinding(etkEventSource.class)
+public class etkEventBinder implements EventProducer {
 
-    private final SampleEventSource sampleEventSource;
+    private final etkEventSource etkEventSource;
 
-    public SampleEventBinder(SampleEventSource sampleEventSource) {
-        this.sampleEventSource = sampleEventSource;
+    public etkEventBinder(etkEventSource etkEventSource) {
+        this.etkEventSource = etkEventSource;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class SampleEventBinder implements EventProducer {
         Logger log = null;
         log.info("payload : {}", payload);
 
-        boolean result = sampleEventSource.sampleEventChannel().send(MessageBuilder.withPayload(payload).build());
+        boolean result = etkEventSource.etiketEventChannel().send(MessageBuilder.withPayload(payload).build());
         log.info("result : {}", result);
     }
 }

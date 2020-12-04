@@ -30,20 +30,18 @@ spring:
       maxLifetime: 580000
       maximumPoolSize: 30
       minimumIdle: 10
-
 ---
-#jdbc
 spring:
-  profiles: default
-  datasource:
-    hikari:
-      dirver-class-name: org.mariadb.jdbc.Driver
-      jdbc-url: ${jdbcurl}
-      username: ${jdbcuser}
-      password: ${jdbcpass}
-      idleTimeout: 10000
-      connection-timeout: 10000
-      validation-timeout: 10000
-      maxLifetime: 580000
-      maximumPoolSize: 30
-      minimumIdle: 10
+  profiles: local
+  kafka:
+    bootstrap-servers: 172.16.10.140:9092
+    listener:
+      concurrency: 4
+    cloud:
+      stream:
+        bindings:
+          etiketChannel:
+            destination: ServiceData.etiket
+            group: etiket-group
+    default:
+      content-type: application/json

@@ -36,6 +36,7 @@
             , 'kWh' as usageUnit
             , BILL.ACCUMULATEBILL as balance
             , 'GHC' as creditUnit
+            , CONT.OWE_CREDIT as oweCredit
         FROM
             CONTRACT CONT
             LEFT OUTER JOIN CUSTOMER CUST ON CONT.CUSTOMER_ID = CUST.ID
@@ -46,6 +47,7 @@
             METER.MDS_ID
             , BILL.ACCUMULATEUSAGE
             , BILL.ACCUMULATEBILL
+            , CONT.OWE_CREDIT
     </select>
 
     <select id="getUsage" resultType="usageJpo" parameterType="java.lang.String">

@@ -11,10 +11,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ArrearsDebt {
 
-    @ApiModelProperty(value = "debtType", example = "CD001")
+    @ApiModelProperty(value = "debtType", example = "")
     private String debtType;
 
-    @ApiModelProperty(value = "debtRef", example = "02002529390120150734")
+    @ApiModelProperty(value = "debtRef", example = "")
     private String debtRef;
 
     @ApiModelProperty(value = "paidDebtAmount", example = "")

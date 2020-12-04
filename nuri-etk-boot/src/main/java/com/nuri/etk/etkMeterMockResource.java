@@ -31,22 +31,22 @@ public class etkMeterMockResource implements MeterFlowFacade {
             @ApiImplicitParam(name = "meterId", value = "미터 시리얼 번호", required = true, dataType = "string", paramType = "path", defaultValue = "")
     })
     @GetMapping(value={"/meters/{meterId}"})
-    public List<Meter> getMeterInfo(@PathVariable String meterId){
+    public Meter getMeterInfo(@PathVariable String meterId){
         System.out.println("######## getMeterInfo parameter {meterId} : " + meterId + " ########");
         return meterService.getMeterInfo(meterId);
     }
 
-    @Override
+    /*@Override
     @GetMapping(value={"/meters/getMeterList"})
     public Meter getMeterList(String customerNo){
         return Meter.getMeterList(customerNo);
     }
 
     @Override
-//    @GetMapping(value={"/meters/getMeterByGC"})
+    @GetMapping(value={"/meters/getMeterByGC"})
     public Meter getMeterByGC(String supplier, String geocode){
         return Meter.getMeterByGC(supplier, geocode);
-    }
+    }*/
 
     @Override
     @ApiOperation(value = "충전 시 대상 조회", notes = "충전 시 대상 정보 요청 API")

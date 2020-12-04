@@ -14,6 +14,7 @@ public class TargetByMeterJpo {
     private Integer code;
     private String geocode;
     private Double credit;
+    private Double oweCredit;
     private String address;
     private String lastChargeDate;
     private String customerId;
@@ -28,6 +29,7 @@ public class TargetByMeterJpo {
             this.code = targetByMeter.getCode();
             this.geocode = targetByMeter.getGeocode();
             this.credit = targetByMeter.getCredit();
+            this.oweCredit = targetByMeter.getOweCredit();
             this.address = targetByMeter.getAddress();
             this.lastChargeDate = targetByMeter.getLastChargeDate();
             this.customerId = targetByMeter.getCustomerId();
@@ -44,6 +46,7 @@ public class TargetByMeterJpo {
         targetByMeter.setCode(this.code);
         targetByMeter.setGeocode(this.geocode);
         targetByMeter.setCredit(this.credit);
+        targetByMeter.setOweCredit(this.oweCredit);
         targetByMeter.setAddress(this.address);
         targetByMeter.setLastChargeDate(this.lastChargeDate);
         targetByMeter.setCustomerId(this.customerId);

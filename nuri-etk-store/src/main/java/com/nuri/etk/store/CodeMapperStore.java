@@ -15,7 +15,7 @@ public class CodeMapperStore implements CodeStore {
     }
 
     @Override
-    public Code getkeyType(Integer payTypeId) {
+    public Code getkeyType(String payTypeId) {
         return null;
     }
 }
