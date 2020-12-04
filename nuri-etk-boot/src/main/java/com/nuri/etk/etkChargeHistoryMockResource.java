@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
@@ -47,19 +48,23 @@ public class etkChargeHistoryMockResource implements ChargeHistoryFlowFacade {
     })
     @GetMapping(value={"/meters/{meterId}/charge/history"})
     public ChargeHistory chargeHistory(@PathVariable String meterId,
-                                       @RequestParam(value="startDate", required=true) String startDate,
+                                       @RequestHeader HttpHeaders headers
+                                       /*@RequestParam(value="startDate", required=true) String startDate,
                                        @RequestParam(value="endDate", required=true) String endDate,
                                        @RequestParam(value="paymentType", required=false, defaultValue = "All") String paymentType,
                                        @RequestParam(value="listCount", required=true) String listCount,
-                                       @RequestParam(value="pageCount", required=true) String pageCount) throws Exception {
+                                       @RequestParam(value="pageCount", required=true) String pageCount*/) throws Exception {
+
+
+        // 쿼리 스트링 파싱
+        SimpleDateFormat format = new SimpleDateFormat( "YYYYMM");
+        String startDate = headers.get("startDate").get(0);
+        String endDate = headers.get("endDate").get(0);
+        String paymentType = headers.get("paymentType").get(0);
+        String listCount = headers.get("listCount").get(0);
+        String pageCount = headers.get("pageCount").get(0);
 
         System.out.println("######## chargeHistory parameter {meterId : " + meterId + "} {startDate : " + startDate + "} {endDate : " + endDate + "} {paymentType : "+ paymentType +"} {listCount : "+ listCount +"} {pageCount : "+ pageCount +"} ########");
-
-        // 쿼리 스트링 파싱 startDate, endDate
-        SimpleDateFormat format = new SimpleDateFormat( "YYYYMM");
-
-        // startDate, endDate 데이터 검증
-
         return chargeHistoryService.chargeHistory(meterId, startDate, endDate, paymentType, listCount, pageCount);
     }
 }

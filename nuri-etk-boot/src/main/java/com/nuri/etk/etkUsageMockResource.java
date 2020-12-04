@@ -11,7 +11,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.SimpleDateFormat;
 
 @RestController
 @CrossOrigin("*")
@@ -69,8 +72,13 @@ public class etkUsageMockResource implements UsageFlowFacade {
     @GetMapping(value={"/meters/{meterId}/usage/yearly"})
 //    public UsageYearly getUsageYearly(@PathVariable String meterId, HttpServletRequest req) {
     public UsageYearly getUsageYearly(@PathVariable String meterId,
-                                      @RequestParam(value="startDate", required=false) String startDate,
-                                      @RequestParam(value="endDate", required=false) String endDate) {
+                                      @RequestHeader HttpHeaders headers
+                                      /*@RequestParam(value="startDate", required=false) String startDate,
+                                      @RequestParam(value="endDate", required=false) String endDate*/) {
+
+        SimpleDateFormat format = new SimpleDateFormat( "YYYYMM");
+        String startDate = headers.get("startDate").get(0);
+        String endDate = headers.get("endDate").get(0);
 
         System.out.println("######## getUsageYearly parameter {meterId : " + meterId + "} {startDate : " + startDate + "} {endDate : " + endDate + "} ########");
         return usageService.getUsageYearly(meterId, startDate, endDate);
