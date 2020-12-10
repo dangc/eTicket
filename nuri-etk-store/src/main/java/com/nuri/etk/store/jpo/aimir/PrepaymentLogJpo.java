@@ -21,6 +21,8 @@ public class PrepaymentLogJpo {
     
     private Integer customerId;
 
+    private String customerNo;
+
     private VendorCasher vendorCasher;
     
     private Integer vendorCasherId;
@@ -150,6 +152,9 @@ public class PrepaymentLogJpo {
         prepaymentLog.setChargedArrears(this.chargedArrears);
         prepaymentLog.setIsCanceled(this.isCanceled);
         prepaymentLog.setContractId(this.contractId);
+        prepaymentLog.setCustomerId(this.customerId);
+        prepaymentLog.setCustomerNo(this.customerNo);
+        prepaymentLog.setId(this.id);
         return prepaymentLog;
     }
 }

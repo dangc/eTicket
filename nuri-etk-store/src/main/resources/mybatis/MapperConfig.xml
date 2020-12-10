@@ -32,6 +32,15 @@
         <typeAlias alias="aimirMeterJpo" type="com.nuri.etk.store.jpo.aimir.MeterJpo"/>
         <typeAlias alias="aimirModemJpo" type="com.nuri.etk.store.jpo.aimir.ModemJpo"/>
         <typeAlias alias="aimirPrepaymentLogJpo" type="com.nuri.etk.store.jpo.aimir.PrepaymentLogJpo"/>
+        <typeAlias alias="aimirDebtEntJpo" type="com.nuri.etk.store.jpo.aimir.DebtEntJpo"/>
+        <typeAlias alias="aimirDebtLogJpo" type="com.nuri.etk.store.jpo.aimir.DebtLogJpo"/>
+        <typeAlias alias="prepaymentLog" type="com.nuri.etk.entity.aimir.PrepaymentLog"/>
+        <typeAlias alias="depositHistory" type="com.nuri.etk.entity.aimir.DepositHistory"/>
+        <typeAlias alias="debtLog" type="com.nuri.etk.entity.aimir.DebtLog"/>
+        <typeAlias alias="debtEnt" type="com.nuri.etk.entity.aimir.DebtEnt"/>
+        <typeAlias alias="contract" type="com.nuri.etk.entity.aimir.Contract"/>
+        <typeAlias alias="contractChangeLog" type="com.nuri.etk.entity.aimir.ContractChangeLog"/>
+        <typeAlias alias="STSLog" type="com.nuri.etk.entity.aimir.EcgSTSLog"/>
     </typeAliases>
 
     <mappers>

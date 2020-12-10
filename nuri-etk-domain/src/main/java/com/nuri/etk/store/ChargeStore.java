@@ -16,7 +16,9 @@ public interface ChargeStore {
 
     Contract getContract(String meterId);
 
-    List<DebtEnt> getDebt(String customerNo, String debtType, String debtRef);
+    List<DebtEnt> getDebtEnt(String customerNo, String debtType, String debtRef);
+
+    List<DebtLog> getDebtLog(String id);
 
     Operator getOperator(String operatorId);
 
@@ -53,4 +55,8 @@ public interface ChargeStore {
     Supplier getSupplier(Integer supplierId);
 
     PrepaymentLog getPrepayLog(String id, String meterId);
+
+    void updateCallbackHistory(APICallBackHistory queryHistory);
+
+    void updatePrepaymentLog(PrepaymentLog prepayLog);
 }

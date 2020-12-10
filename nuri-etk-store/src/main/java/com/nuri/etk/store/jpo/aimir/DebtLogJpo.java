@@ -1,5 +1,6 @@
-package com.nuri.etk.entity.aimir;
+package com.nuri.etk.store.jpo.aimir;
 
+import com.nuri.etk.entity.aimir.DebtLog;
 import com.nuri.etk.entity.aimir.PrepaymentLog;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DebtLog {
+public class DebtLogJpo {
 
 	private Long id;
 	
@@ -35,4 +36,18 @@ public class DebtLog {
 	private Double chargedDebt;
 	
 	private String partpayInfo;
+
+	public DebtLog toDomain(){
+		DebtLog debtLog = new DebtLog();
+		debtLog.setId(this.id);
+		debtLog.setPrepaymentLogId(this.prepaymentLogId);
+		debtLog.setCustomerId(this.customerId);
+		debtLog.setDebtType(this.debtType);
+		debtLog.setDebtRef(this.debtRef);
+		debtLog.setPreDebt(this.preDebt);
+		debtLog.setDebt(this.debt);
+		debtLog.setChargedDebt(this.chargedDebt);
+		debtLog.setPartpayInfo(this.partpayInfo);
+		return debtLog;
+	}
 }

@@ -81,8 +81,26 @@ public class ChargeMapperStore implements ChargeStore {
     }
 
     @Override
-    public List<DebtEnt> getDebt(String customerNo, String debtType, String debtRef) {
-        return null;
+    public List<DebtEnt> getDebtEnt(String customerNo, String debtType, String debtRef) {
+        List<DebtEntJpo> debtEntJpos = null;
+        try {
+            debtEntJpos = chargeMapper.getDebtEnt(customerNo, null, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return debtEntJpos.stream().map(DebtEntJpo::toDoamin).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DebtLog> getDebtLog(String id) {
+        List<DebtLogJpo> debtLogs = null;
+        try {
+            debtLogs = chargeMapper.getDebtLog(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return debtLogs.stream().map(DebtLogJpo::toDomain).collect(Collectors.toList());
     }
 
     @Override
@@ -97,17 +115,29 @@ public class ChargeMapperStore implements ChargeStore {
 
     @Override
     public void addPrepaymentLog(PrepaymentLog prepaymentLog) {
-
+        try {
+            chargeMapper.addPrepaymentLog(prepaymentLog);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void addDepositHistory(DepositHistory dh) {
-
+        try {
+            chargeMapper.addDepositHistory(dh);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void addDebtLog(DebtLog debtLog) {
-
+        try {
+            chargeMapper.addDebtLog(debtLog);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -117,17 +147,29 @@ public class ChargeMapperStore implements ChargeStore {
 
     @Override
     public void updateDebtEnt(DebtEnt debtEnt) {
-
+        try {
+            chargeMapper.updateDebtEnt(debtEnt);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void updateContract(Contract contract) {
-
+        try {
+            chargeMapper.updateContract(contract);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void addAsyncCommandLog(AsyncCommandLog asyncCommandLog) {
-
+        try {
+            chargeMapper.addAsyncCommandLog(asyncCommandLog);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -142,12 +184,20 @@ public class ChargeMapperStore implements ChargeStore {
 
     @Override
     public void addContractChangeLog(ContractChangeLog contractChangeLog) {
-
+        try {
+            chargeMapper.addContractChangeLog(contractChangeLog);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void addSTSlog(EcgSTSLog stslog) {
-
+        try {
+            chargeMapper.addSTSlog(stslog);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -169,6 +219,20 @@ public class ChargeMapperStore implements ChargeStore {
             e.printStackTrace();
         }
         return prepaymentLog.toDomain();
+    }
+
+    @Override
+    public void updateCallbackHistory(APICallBackHistory queryHistory) {
+
+    }
+
+    @Override
+    public void updatePrepaymentLog(PrepaymentLog prepayLog) {
+        try {
+            chargeMapper.updatePrepaymentLog(prepayLog);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

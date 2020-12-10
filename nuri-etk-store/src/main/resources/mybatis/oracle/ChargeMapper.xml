@@ -2,7 +2,7 @@
 <!--***********************************
 * @Copyright : nuritelecom
 * @ProjectName : nuri-aimir-etk
-* @FileName : MeterMapper.xml
+* @FileName : ChargeMapper.xml
 * @Author : jhdang
 * @Date : 2020-10
 ************************************-->
@@ -50,12 +50,33 @@
         </where>
     </sql>
 
+    <sql id="base_where_getDebtEnt">
+        WHERE DEBT_STATUS != 'CANCEL'
+            <if test='customerNo != null and customerNo != ""' >
+                AND WS_CMS_DEBTENT.CUSTOMER_ID = #{customerNo}
+            </if>
+            <if test='debtType != null and debtType != ""' >
+                AND WS_CMS_DEBTENT.DEBT_TYPE = #{debtType}
+            </if>
+            <if test='debtRef != null and debtRef != ""' >
+                AND WS_CMS_DEBTENT.DEBT_REF = #{debtRef}
+            </if>
+    </sql>
+
+    <sql id="base_where_getDebtLog">
+        <where>
+            <if test='id != null and id != ""' >
+                AND CAST(DEBTLOG.PREPAYMENTLOG_ID as VARCHAR2(255 CHAR)) = #{id}
+            </if>
+        </where>
+    </sql>
+
     <select id="getContract" resultType="aimirContractJpo" parameterType="java.lang.String">
         SELECT
             CONT.ID AS id
             , CONT.CONTRACT_NUMBER AS contractNumber
-            , CUST.CUSTOMERNO AS customerId
-            , CUST.NAME AS customerName
+            , CONT.CUSTOMER_ID AS customerId
+            , CUST.CUSTOMERNO AS customerName
             , CONT.LASTTOKENDATE AS lastTokenDate
             , CONT.CURRENTCREDIT AS currentCredit
             , CONT.CHARGEDCREDIT AS chargedCredit
@@ -63,6 +84,8 @@
             , CONT.LASTCHARGECNT AS lastChargeCnt
             , CONT.TARIFFINDEX_ID as tariffIndexId
             , CONT.CASH_POINT AS cashPoint
+            , CONT.LOCATION_ID AS locationId
+            , CONT.EMERGENCYCREDITAVAILABLE AS emergencyCreditAvailable
             , TARIFF.CODE AS tariffIndex
             , STAT.DESCR AS status
         FROM
@@ -197,8 +220,11 @@
             , PREPAY.CHARGEDARREARS AS chargedArrears
             , PREPAY.IS_CANCELED AS isCanceled
             , PREPAY.CONTRACT_ID AS contractId
+            , PREPAY.ID AS id
+            , cust.CUSTOMERNO AS customerNo
         FROM
         CONTRACT CONT
+        LEFT OUTER JOIN Customer cust on cont.CUSTOMER_ID = cust.id
         LEFT OUTER JOIN METER METER ON CONT.METER_ID = METER.ID
         LEFT OUTER JOIN PREPAYMENTLOG PREPAY ON PREPAY.CONTRACT_ID = CONT.ID
         LEFT OUTER JOIN DEBTLOG DEBT ON PREPAY.ID = DEBT.PREPAYMENTLOG_ID
@@ -206,4 +232,229 @@
         LEFT OUTER JOIN CODE PAYTYPE ON PREPAY.PAY_TYPE_CODE = PAYTYPE.ID
         <include refid="base_where_prepayLog" />
     </select>
+
+    <select id="getDebtEnt" resultType="aimirDebtEntJpo" parameterType="java.lang.String">
+        SELECT
+            CUSTOMER_ID AS customerId
+            , DEBT_AMOUNT AS debtAmount
+            , DEBT_CONTRACT_COUNT AS debtContractCount
+            , DEBT_PAYMENT_COUNT AS debtPaymentCount
+            , DEBT_REF AS debtRef
+            , DEBT_STATUS AS debtStatus
+            , DEBT_TYPE AS debtType
+            , FIRST_DEBT AS firstDebt
+            , INSTALLMENT_DUE_DATE AS installmentDueDate
+            , WRITE_DATE AS writeDate
+        FROM
+            WS_CMS_DEBTENT
+        <include refid="base_where_getDebtEnt" />
+    </select>
+
+    <select id="getDebtLog" resultType="aimirDebtLogJpo" parameterType="java.lang.String">
+        SELECT
+            CHARGEDDEBT AS chargedDebt
+            , CUSTOMERID AS customerId
+            , DEBT AS debt
+            , DEBT_REF AS debtRef
+            , DEBT_TYPE AS debtType
+            , ID AS id
+            , PARTPAYINFO AS partpayInfo
+            , PREPAYMENTLOG_ID AS prepaymentLogId
+            , PRE_DEBT AS preDebt
+        FROM
+            DEBTLOG
+        <include refid="base_where_getDebtLog" />
+    </select>
+
+    <insert id="addPrepaymentLog" parameterType="prepaymentLog">
+        INSERT INTO PREPAYMENTLOG (
+            ID
+            , ARREARS
+            , PRE_ARREARS
+            , CHARGEDARREARS
+            , TOKEN
+            , DAYS_FROM_CHARGE
+            , LASTTOKENID
+            , LASTTOKENDATE
+<!--            , KEYTYPE_ID-->
+            , CHARGEDCREDIT
+            , EMERGENCYCREDITAVAILABLE
+            , PRE_BALANCE
+            , BALANCE
+            , CUSTOMER_ID
+            , CONTRACT_ID
+            , TARIFFINDEX_ID
+        )
+        VALUES (
+            #{id}
+            , #{arrears, jdbcType=INTEGER}
+            , #{preArrears, jdbcType=INTEGER}
+            , #{chargedArrears, jdbcType=INTEGER}
+            , #{token, jdbcType=VARCHAR}
+            , #{daysFromCharge, jdbcType=VARCHAR}
+            , #{lastTokenId, jdbcType=VARCHAR}
+            , #{lastTokenDate, jdbcType=VARCHAR}
+<!--            , #{keyType, jdbcType=INTEGER}-->
+            , #{chargedCredit, jdbcType=INTEGER}
+            , #{emergencyCreditAvailable, jdbcType=INTEGER}
+            , #{preBalance, jdbcType=INTEGER}
+            , #{balance, jdbcType=INTEGER}
+            , #{customerId, jdbcType=INTEGER}
+            , #{contractId, jdbcType=INTEGER}
+            , #{tariffIndexId, jdbcType=INTEGER}
+        )
+    </insert>
+
+    <insert id="addDepositHistory" parameterType="depositHistory">
+        <selectKey keyProperty="id" resultType="java.lang.Integer" order="BEFORE">
+            SELECT SEQ_DEPOSIT_HISTORY.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO DEPOSIT_HISTORY (
+            ID
+            , CONTRACT_ID
+            , CUSTOMER_ID
+            , METER_ID
+            , PREPAYMENTLOG_ID
+            , CHANGE_DATE
+            , CHARGE_CREDIT
+        )
+        VALUES (
+            #{id}
+            , #{contractId, jdbcType=INTEGER}
+            , #{customerId, jdbcType=INTEGER}
+            , #{meterId, jdbcType=INTEGER}
+            , #{prepaymentLogId, jdbcType=INTEGER}
+            , #{changeDate, jdbcType=VARCHAR}
+            , #{chargeCredit, jdbcType=INTEGER}
+        )
+    </insert>
+
+    <insert id="addDebtLog" parameterType="debtLog">
+        <selectKey keyProperty="id" resultType="java.lang.Integer" order="BEFORE">
+            SELECT DEBTLOG_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO DEBTLOG (
+            ID
+            , PRE_DEBT
+            , DEBT
+            , CHARGEDDEBT
+            , DEBT_REF
+            , CUSTOMERID
+            , DEBT_TYPE
+            , PARTPAYINFO
+            , PREPAYMENTLOG_ID
+        )
+        VALUES (
+            #{id}
+            , #{preDebt, jdbcType=INTEGER}
+            , #{debt, jdbcType=INTEGER}
+            , #{chargedDebt, jdbcType=INTEGER}
+            , #{debtRef, jdbcType=VARCHAR}
+            , #{customerId, jdbcType=VARCHAR}
+            , #{debtType, jdbcType=VARCHAR}
+            , #{partpayInfo, jdbcType=VARCHAR}
+            , #{partpayInfo, jdbcType=VARCHAR}
+            , #{prepaymentLogId, jdbcType=INTEGER}
+        )
+    </insert>
+
+    <insert id="addContractChangeLog" parameterType="contractChangeLog">
+        <selectKey keyProperty="id" resultType="java.lang.Long" order="BEFORE">
+            SELECT SEQ_CONTRACTCHANGELOG.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO CONTRACTCHANGELOG (
+            ID
+            , AFTERVALUE
+            , BEFOREVALUE
+            , CHANGEFIELD
+            , CONTRACT_ID
+            , CUSTOMER_ID
+            , STARTDATETIME
+            , WRITEDATETIME
+        )
+        VALUES (
+            #{id}
+            , #{afterValue, jdbcType=VARCHAR}
+            , #{beforeValue, jdbcType=VARCHAR}
+            , #{changeField, jdbcType=VARCHAR}
+            , #{contractId, jdbcType=INTEGER}
+            , #{customerId, jdbcType=INTEGER}
+            , #{startDatetime, jdbcType=VARCHAR}
+            , #{writeDatetime, jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <insert id="addSTSlog" parameterType="STSLog">
+        INSERT INTO ECG_STS_LOG (
+            SEQ
+            , CMD
+            , ASYNC_TR_ID
+            , METER_NUMBER
+            , CREATE_DATE
+            , GETDATE
+            , RESULT
+            , TOKENDATE
+            , RESULTDATE
+        )
+        VALUES (
+            #{seq, jdbcType=INTEGER}
+            , #{cmd, jdbcType=VARCHAR}
+            , #{asyncTrId, jdbcType=INTEGER}
+            , #{meterNumber, jdbcType=VARCHAR}
+            , #{createDate, jdbcType=INTEGER}
+            , #{getDate, jdbcType=INTEGER}
+            , #{result, jdbcType=INTEGER}
+            , #{tokenDate, jdbcType=VARCHAR}
+            , #{resultDate, jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <!--<update id="" parameterType="">
+        UPDATE API_CALLBACKHISTORY SET
+
+
+    </update>-->
+
+    <update id="updateDebtEnt" parameterType="debtEnt">
+        UPDATE WS_CMS_DEBTENT SET
+            DEBT_AMOUNT = #{debtAmount, jdbcType=INTEGER},
+            DEBT_CONTRACT_COUNT = #{debtContractCount, jdbcType=INTEGER},
+            DEBT_PAYMENT_COUNT = #{debtPaymentCount, jdbcType=INTEGER},
+            DEBT_STATUS = #{debtStatus, jdbcType=VARCHAR},
+            DEBT_TYPE = #{debtType, jdbcType=VARCHAR},
+            FIRST_DEBT = #{firstDebt, jdbcType=INTEGER},
+            INSTALLMENT_DUE_DATE = #{installmentDueDate},
+            WRITE_DATE = #{writeDate, jdbcType=VARCHAR}
+        WHERE 1=1
+        <if test='customerId != null and customerId != ""' >
+            AND CUSTOMER_ID = #{customerId}
+        </if>
+        <if test='debtRef != null and debtRef != ""' >
+            AND DEBT_REF = #{debtRef}
+        </if>
+    </update>
+
+    <update id="updateContract" parameterType="contract">
+        UPDATE CONTRACT SET
+            LASTTOKENDATE = #{lastTokenDate, jdbcType=VARCHAR},
+            CHARGEDCREDIT = #{chargedCredit, jdbcType=INTEGER},
+            CURRENTCREDIT = #{currentCredit, jdbcType=INTEGER},
+            LASTCHARGECNT = #{lastChargeCnt, jdbcType=INTEGER},
+            CURRENTARREARS = #{currentArrears, jdbcType=INTEGER}
+        WHERE 1=1
+        <if test='id != null and id != ""' >
+            AND ID = #{id}
+        </if>
+    </update>
+
+    <update id="updatePrepaymentLog" parameterType="prepaymentLog">
+        UPDATE PREPAYMENTLOG SET
+            CANCEL_TOKEN = #{cancelToken, jdbcType=VARCHAR},
+            IS_CANCELED = #{isCanceled, jdbcType=INTEGER},
+            CANCEL_DATE = #{cancelDate, jdbcType=VARCHAR}
+        WHERE 1=1
+        <if test='id != null and id != ""' >
+            AND ID = #{id}
+        </if>
+    </update>
 </mapper>

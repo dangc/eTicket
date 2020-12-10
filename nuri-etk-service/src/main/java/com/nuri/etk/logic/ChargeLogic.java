@@ -56,19 +56,22 @@ public class ChargeLogic implements ChargeService {
 
         JSONObject response = balanceCharge(meterId, headers, chargeInfo);
         result = (String) response.get("result");
-        token = (String) response.get("token");
 
         if (result.equals("success")) {
+            token = (String) response.get("token");
+            charge.setToken(token);
             charge.setCode(200);
+        }else if(result.equals("failed")){
+            charge.setCode(361);
         }
         charge.setResultDetail(result);
-        charge.setToken(token);
 
         return charge;
 
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Charge meterChargeCancle(String meterId, HttpHeaders headers, ChargeCancelInfo chargeCancelInfo) throws Exception {
         Charge charge = new Charge();
         String result = null;
@@ -76,13 +79,17 @@ public class ChargeLogic implements ChargeService {
 
         JSONObject response = balanceChargeCancle(meterId, headers, chargeCancelInfo);
         result = (String) response.get("result");
-        token = (String) response.get("token");
 
-        if (result.equals("success")) {
+        if(result.equals("success")){
+            token = (String) response.get("token");
+            charge.setToken(token);
             charge.setCode(200);
+        }else if(result.equals("canceled Data")){
+            charge.setCode(560);
+        }else if(result.equals("failed")){
+            charge.setCode(361);
         }
         charge.setResultDetail(result);
-        charge.setToken(token);
 
         return charge;
     }
@@ -124,6 +131,7 @@ public class ChargeLogic implements ChargeService {
             responseCode.put("code", ETKConstants.ErrorType.missingRequiredData.getIntValue());
             responseCode.put("msgUser", ETKConstants.ErrorType.missingRequiredData);
             responseCode.put("msgDeveloper", e.getMessage());
+            responseCode.put("result", "failed");
             return responseCode;
         }
 
@@ -165,6 +173,7 @@ public class ChargeLogic implements ChargeService {
             responseCode.put("code", ETKConstants.ErrorType.internalServerError.getIntValue());
             responseCode.put("msgUser", ETKConstants.ErrorType.internalServerError);
             responseCode.put("msgDeveloper", e.getMessage());
+            responseCode.put("result", "failed");
             return responseCode;
         }
 
@@ -208,6 +217,7 @@ public class ChargeLogic implements ChargeService {
             responseCode.put("code", ETKConstants.ErrorType.failToSendSTSToken.getIntValue());
             responseCode.put("msgUser", ETKConstants.ErrorType.failToSendSTSToken);
             responseCode.put("msgDeveloper", e.getMessage());
+            responseCode.put("result", "failed");
             return responseCode;
         }
         // token 전송 (E)
@@ -224,7 +234,7 @@ public class ChargeLogic implements ChargeService {
         Double arrearsAmount = Double.parseDouble(condition.get("arrearsAmount").toString());
         Double debtAmount = Double.parseDouble(condition.get("debtAmount").toString());
         String chargeId = StringUtil.nullToBlank(condition.get("chargeId"));
-        List<Map<String, Object>> currentDebtList = (List<Map<String, Object>>) condition.get("debtList");
+        List<ArrearsDebt> currentDebtList = (List<ArrearsDebt>) condition.get("debtList");
 
         try {
             Meter meter = chargeStore.getMeter(mdsId);
@@ -251,7 +261,7 @@ public class ChargeLogic implements ChargeService {
                 return responseCode;
             }
 
-            List<DebtEnt> debtEntList = chargeStore.getDebt(customerNo, null, null);
+            List<DebtEnt> debtEntList = chargeStore.getDebtEnt(customerNo, null, null);
 
             /*Operator updateOperator = chargeStore.getOperator(operatorId);
             if (updateOperator == null) {
@@ -262,7 +272,7 @@ public class ChargeLogic implements ChargeService {
             }*/
 
             // 납기일이 지난 Debt Check (S)
-           /* int currentDate = Integer.parseInt(TimeUtil.getCurrentDay());
+            int currentDate = Integer.parseInt(TimeUtil.getCurrentDay());
             Double totalPastDebtAmount = 0d;
 
             for (int j = 0; j < debtEntList.size(); j++) {
@@ -294,7 +304,7 @@ public class ChargeLogic implements ChargeService {
                 responseCode.put("msgDeveloper", "This customer must first pay all amounts that have passed the due date."
                         + " totalPastDebtAmount: " + totalPastDebtAmount + ", enteredDebtAmount: " + debtAmount);
                 return responseCode;
-            }*/
+            }
             // 납기일이 지난 Debt Check (E)
 
             String token = null;
@@ -343,11 +353,6 @@ public class ChargeLogic implements ChargeService {
                 String tokenValue = String.valueOf(Math.round(value));
 
                 if (vendorName != null && modelName != null) {
-                    //Properties prop = new Properties();
-                    //prop.load(getClass().getClassLoader().getResourceAsStream("config/command.properties"));
-                    //String stsBaseUrl = prop.getProperty("sts.baseUrl");
-                    //String SGC = prop.getProperty("sts.sgcNumber") == null ? "" : prop.getProperty("sts.sgcNumber");
-
                     Properties prop = new Properties();
                     prop.load(getClass().getClassLoader().getResourceAsStream("command.properties"));
                     String stsBaseUrl = prop.getProperty("sts.baseUrl");
@@ -444,9 +449,14 @@ public class ChargeLogic implements ChargeService {
             prepaymentLog.setArrears(preArrears);
             prepaymentLog.setPreArrears(preArrears);
             prepaymentLog.setChargedArrears(0d);
-/*
+
             for (int i = 0; i < currentDebtList.size(); i++) {
-                Map<String, Object> map = currentDebtList.get(i);
+                Map<String, Object> map = new HashMap<>();
+                ArrearsDebt debts = currentDebtList.get(i);
+                map.put("debtType", debts.getDebtType());
+                map.put("debtRef", debts.getDebtRef());
+                map.put("paidDebtAmount", debts.getPaidDebtAmount());
+
                 Double payAmount = map.get("payAmount") != null ? Double.parseDouble(map.get("payAmount").toString()): 0.0;
                 if (((String) map.get("debtType")).equals("Arrears")) {
                     Double currentArrears = new BigDecimal(StringUtil.nullToDoubleZero(preArrears)).subtract(new BigDecimal(payAmount)).doubleValue();
@@ -518,7 +528,7 @@ public class ChargeLogic implements ChargeService {
                         debtLogList.add(emptyDebtLog);
                     }
                 }
-            }*/
+            }
 
             // 미터가 교체되고 처음 결제 되는 경우 로그에 미터 교체 비용관련 항목이 추가된다.
             Integer daysFromCharge;
@@ -538,59 +548,59 @@ public class ChargeLogic implements ChargeService {
 
             prepaymentLog.setLastTokenId(chargeId);
             prepaymentLog.setDaysFromCharge(daysFromCharge);
-//            prepaymentLog.setCustomer(contract.getCustomer());
-            prepaymentLog.setContract(contract);
+            prepaymentLog.setCustomerId(Integer.valueOf(contract.getCustomerId()));
+            prepaymentLog.setContractId(contract.getId());
             prepaymentLog.setKeyType(null);
             prepaymentLog.setChargedCredit(chargedCredit);
             prepaymentLog.setLastTokenDate(DateTimeUtil.getCurrentDateTimeByFormat("yyyyMMddHHmmss"));
-            prepaymentLog.setOperator(operator);
+//            prepaymentLog.setOperator(operator);
             Integer emergencyYn = null;
             if (contract.getEmergencyCreditAvailable() != null) {
                 emergencyYn = (contract.getEmergencyCreditAvailable()) ? 1 : 0;
             }
             prepaymentLog.setEmergencyCreditAvailable(emergencyYn);
-            // prepaymentLog.setPowerLimit(contractDemand);
+//            prepaymentLog.setPowerLimit(contractDemand);
             prepaymentLog.setPreBalance(preCredit);
             prepaymentLog.setBalance(currentCredit);
             prepaymentLog.setLocation(contract.getLocation());
-            prepaymentLog.setTariffIndex(contract.getTariffIndex());
+            prepaymentLog.setTariffIndexId(contract.getTariffIndexId());
             prepaymentLog.setPayType(keyType);
 
             // Prepaymentlog의 ID 생성방법 변경(id+시스템시간)
             prepaymentLog.setId(Long.parseLong(Integer.toString(contract.getId()) + Long.toString(System.currentTimeMillis())));
-//            prepaymentLogDao.add(prepaymentLog);
+            chargeStore.addPrepaymentLog(prepaymentLog);
 
             log.info("prepaymentLog has been added");
 
             //TO Do DepositHistory insert
-          /*  DepositHistory dh = new DepositHistory();
-            dh.setOperator(updateOperator);
-            dh.setContract(contract);
-            dh.setCustomer(contract.getCustomer());
-            dh.setMeter(meter);
+            DepositHistory dh = new DepositHistory();
+//            dh.setOperator(updateOperator);
+            dh.setContractId(contract.getId());
+            dh.setCustomerId(Integer.valueOf(contract.getCustomerId()));
+            dh.setMeterId(meter.getId());
             dh.setChangeDate(DateTimeUtil.getCurrentDateTimeByFormat("yyyyMMddHHmmss"));
             dh.setChargeCredit(paidAmount);
-            dh.setDeposit(updateOperator.getDeposit());
-            dh.setPrepaymentLog(prepaymentLog);*/
+//            dh.setDeposit(updateOperator.getDeposit());
+            dh.setPrepaymentLogId(prepaymentLog.getId());
 
-//            depositHistoryDao.add(dh);
+            chargeStore.addDepositHistory(dh);
 
             for (int i = 0; i < debtLogList.size(); i++) {
                 DebtLog debtLog = (DebtLog) debtLogList.get(i);
-                debtLog.setPrepaymentLog(prepaymentLog);
-//                debtLogDao.add(debtLog);
+                debtLog.setPrepaymentLogId(prepaymentLog.getId());
+                chargeStore.addDebtLog(debtLog);
             }
 
 //            operatorDao.update(updateOperator);
-            log.info("operator update is completed");
+//            log.info("operator update is completed");
 
-            /*for (int i = 0; i < debtEntList.size(); i++) {
+            for (int i = 0; i < debtEntList.size(); i++) {
                 ;
-                debtEntDao.update((DebtEnt) debtEntList.get(i));
-            }*/
+                chargeStore.updateDebtEnt((DebtEnt) debtEntList.get(i));
+            }
 
             // update Contract
-//            contractDao.update(contract);
+            chargeStore.updateContract(contract);
 
             log.info("contractInfo has been updated");
             log.info("depositHistory has been added");
@@ -649,16 +659,19 @@ public class ChargeLogic implements ChargeService {
         JSONObject returnData = new JSONObject();
 //        Map<String, Object> returnData = new HashMap<String, Object>();
         String rtn = "success";
+        String uuid = null;
         Contract contract = null;
+        Double paidAmount = 0d;
         Double totalAmount = 0d;
-        Map<String, Object> smsInfo = new HashMap<String, Object>();
         Properties prop = new Properties();
         String modelName = null;
         String vendorName = null;
-        log.info("Long id" + chargeCancelInfo.getChargeId());
         String id = chargeCancelInfo.getChargeId();
         String operatorId = chargeCancelInfo.getOperatorId();
         String reason = chargeCancelInfo.getCancelReason();
+        String chargeId = chargeCancelInfo.getChargeId();
+        int timeout =  Integer.parseInt(headers.get("timeout").get(0).toString());
+        String callBackURI = headers.get("callbackUrl").get(0).toString();
 
         try {
             prop.load(getClass().getClassLoader().getResourceAsStream("command.properties"));
@@ -683,9 +696,6 @@ public class ChargeLogic implements ChargeService {
                 if (prepayLog.getToken() != null && meter.getModel() != null) {
                     vendorName = meter.getModel().getDeviceVendor().getName();
                     modelName = meter.getModel().getName();
-                    smsInfo.put("modelName", modelName);
-                    smsInfo.put("mdsId", meter.getMdsId());
-                    smsInfo.put("deviceSerial", meter.getModem().getDeviceSerial());
 
                     Double chargedCredit = prepayLog.getChargedCredit() == null ? 0d : prepayLog.getChargedCredit();
                     if (chargedCredit > 0) {
@@ -746,7 +756,6 @@ public class ChargeLogic implements ChargeService {
                                 returnData.put("result", "fail : Cannot make Cancel Token.");
                                 return returnData;
                             } else {
-                                smsInfo.put("token", cancelToken);
                                 returnData.put("token", cancelToken);
                                 String createDate = DateTimeUtil.getDateString(new Date());
                                 String cmd = null;
@@ -763,7 +772,7 @@ public class ChargeLogic implements ChargeService {
                                     paramList.add(paramMap);
 
                                     // 모뎀 정보가 있는 경우만 비동기 처리가 가능
-                                   /* if (meter.getModem() != null) {
+                                    /*if (meter.getModem() != null) {
                                         saveAsyncCommandList(meter.getModem().getDeviceSerial(), trId, cmd, paramList, DateTimeUtil.getDateString(new Date()));
                                     }*/
                                 } else {
@@ -784,15 +793,6 @@ public class ChargeLogic implements ChargeService {
                             }
                         }
 
-                        smsInfo.put("modemId", meter.getModemId());
-                        smsInfo.put("prop", prop);
-                        smsInfo.put("ipAddr", ipAddr);
-                        smsInfo.put("port", port);
-                        smsInfo.put("smsClassPath", smsClassPath);
-
-                        int seq = new Random().nextInt(100) & 0xFF;
-                        String smsMsg = cmdMsg((byte) seq, "244.0.0", ipAddr.replaceAll("\\.", ","), port);
-                        smsInfo.put("smsMsg", smsMsg);
                     }
                 }
 
@@ -801,10 +801,10 @@ public class ChargeLogic implements ChargeService {
                 if (!reason.isEmpty()) {
                     prepayLog.setCancelReason(reason);
                 }
-//                prepaymentLogDao.update(prepayLog);
+                chargeStore.updatePrepaymentLog(prepayLog);
 
                 Operator operator = chargeStore.getOperator(operatorId);
-                Operator commitedVendor = prepayLog.getOperator();
+//                Operator commitedVendor = prepayLog.getOperator();
 
                 Double currrentArrears = contract.getCurrentArrears() == null ? 0d : contract.getCurrentArrears();
                 Double chargedArrears = prepayLog.getChargedArrears() == null ? 0d : prepayLog.getChargedArrears();
@@ -815,8 +815,8 @@ public class ChargeLogic implements ChargeService {
                 Double balance = (Double) ObjectUtils.defaultIfNull(currentCredit - chargedCredit, null);
                 List<Map<String, Object>> debtsList = new ArrayList<Map<String, Object>>();
 
-               /* List<DebtEnt> debtEntList = debtEntDao.getDebt(prepayLog.getCustomer().getCustomerNo(), null, null);
-                List<DebtLog> debtLogList = debtLogDao.getDebtLog(id);
+                List<DebtEnt> debtEntList = chargeStore.getDebtEnt(String.valueOf(prepayLog.getCustomerNo()), null, null);
+                List<DebtLog> debtLogList = chargeStore.getDebtLog(String.valueOf(prepayLog.getId()));
                 for (int i = 0; i < debtEntList.size(); i++) {
                     DebtEnt debtEnt = debtEntList.get(i);
                     for (int j = 0; j < debtLogList.size(); j++) {
@@ -835,7 +835,7 @@ public class ChargeLogic implements ChargeService {
                             debtsList.add(debts);
                         }
                     }
-                }*/
+                }
 
                 totalAmount += StringUtil.nullToDoubleZero(prepayLog.getChargedArrears()) + StringUtil.nullToDoubleZero(prepayLog.getChargedCredit());
 
@@ -849,24 +849,23 @@ public class ChargeLogic implements ChargeService {
                 Double preBalance = contract.getCurrentCredit();
                 Double preChargedCredit = contract.getChargedCredit();
 
-                /*addContractChangeLog(contract, operator, "currentCredit", preBalance, balance, null);
+                addContractChangeLog(contract, operator, "currentCredit", preBalance, balance, null);
                 addContractChangeLog(contract, operator, "currentArrears", preArrears, arrears, null);
-                addContractChangeLog(contract, operator, "chargedCredit", preChargedCredit, -totalAmount, null);*/
+                addContractChangeLog(contract, operator, "chargedCredit", preChargedCredit, -totalAmount, null);
 
-               /* for (int i = 0; i < debtsList.size(); i++) {
+               for (int i = 0; i < debtsList.size(); i++) {
                     Map<String, Object> debts = debtsList.get(i);
                     addContractChangeLog(contract, operator, "currentDebts", debts.get("preDebt"), debts.get("debtAmount"), StringUtil.nullToBlank(debts.get("debtType")));
                     DebtEnt debt = (DebtEnt) debts.get("debt");
                     debt.setDebtAmount((Double) debts.get("debtAmount"));
-                    debtEntDao.update(debt);
-                }*/
+                    chargeStore.updateDebtEnt(debt);
+                }
 
-                // 분할납부가 끝난고객의 경우
                 contract.setCurrentCredit(balance);
                 contract.setCurrentArrears(arrears);
                 // 수정 전 소스의 프로세스대로 수정했으나 본래 모델에 정의된 본래 사용의도와 동일하지 않음.
                 contract.setChargedCredit(-totalAmount);
-//                contractDao.update(contract);
+                chargeStore.updateContract(contract);
 
                 for (int i = 0; i < debtsList.size(); i++) {
                     Map<String, Object> debts = debtsList.get(i);
@@ -874,38 +873,53 @@ public class ChargeLogic implements ChargeService {
                     Double debtAmount = (Double) debts.get("debtAmount");
 
                     debt.setDebtAmount(debtAmount);
-//                    debtEntDao.update(debt);
+                    chargeStore.updateDebtEnt(debt);
                 }
 
+                // token 전송 (S)
                 try {
-                    // 충전 취소 후 SMS 전송
-                    /*Supplier supplier = chargeStore.getSupplier(contract.getSupplierId());
-//                    DecimalFormat cdf = DecimalUtil.getDecimalFormat(supplier.getCd());
+                    String token = returnData.get("token").toString();
+                    String mdsId = returnData.get("meterId").toString();
+                    log.info("## Token Retry: meter number[" + mdsId + "] token[" + token + "]");
 
-                    Properties messageProp = new Properties();
-
-                    String lang = supplier.getLang().getCode_2letter();
-                    InputStream ip = getClass().getClassLoader().getResourceAsStream("message_" + lang + ".properties");
-                    if (ip == null) {
-                        ip = getClass().getClassLoader().getResourceAsStream("message_en.properties");
+                    if (sendSTSToken(uuid, mdsId, token, chargeId, timeout, callBackURI) == "success") {
+                        returnData.put("ResultDetail", "token gen:" + true + ", set:" + true);
+//                returnData.put("result", "success");
                     }
-                    messageProp.load(ip);
 
-                    log.info("prop load : " + prop.containsKey("smsClassPath"));
+                    APICallBackHistory history = new APICallBackHistory();
+                    history.setMdevId(meterId);
+//            history.setOperatorId(operatorId);
+                    history.setTid(chargeId);
+                    history.setCallBackURI(callBackURI);
+                    history.setColumn01(String.valueOf(paidAmount)); //충전일 경우 column01 항목에 내용을 저장한다.
+                    if(returnData != null && !returnData.isNull("prepaymentId")) {
+                        history.setPrepaymentLogId(Long.parseLong(returnData.get("prepaymentId").toString()));
+                    }
 
-                    String text = messageProp.getProperty("aimir.alert.cancelCharge").replace("$AMOUNT", String.valueOf(totalAmount)) + messageProp.getProperty("aimir.price.unit");
-
-                    smsInfo.put("contract", contract);
-                    smsInfo.put("text", text);
-                    returnData.put("smsInfo", smsInfo);*/
+                    updateCallbackHistory(uuid, history);
                 } catch (Exception e) {
-                    log.error(e, e);
+                    APICallBackHistory history = new APICallBackHistory();
+                    history.setMdevId(meterId);
+//            history.setOperatorId(operatorId);
+                    history.setTid(chargeId);
+                    history.setCallBackURI(callBackURI);
+                    history.setColumn01(String.valueOf(paidAmount)); //충전일 경우 column01 항목에 내용을 저장한다.
+                    history.setDescr("Exception : " + e.getMessage());
+                    updateCallbackHistory(uuid, history);
+
+                    returnData.put("code", ETKConstants.ErrorType.failToSendSTSToken.getIntValue());
+                    returnData.put("msgUser", ETKConstants.ErrorType.failToSendSTSToken);
+                    returnData.put("msgDeveloper", e.getMessage());
+                    return returnData;
                 }
+                // token 전송 (E)
 
             } else {
-                rtn = "cancelData";
+                rtn = "canceled Data";
             }
         } catch (Exception e) {
+            log.error(e, e);
             rtn = "failed";
         }
 
@@ -978,8 +992,8 @@ public class ChargeLogic implements ChargeService {
                 if(apiCallBackHistory.getMdevId() != null)
                     queryHistory.setMdevId(apiCallBackHistory.getMdevId());
 
-                if(apiCallBackHistory.getOperatorId() != null)
-                    queryHistory.setOperatorId(apiCallBackHistory.getOperatorId());
+//                if(apiCallBackHistory.getOperatorId() != null)
+//                    queryHistory.setOperatorId(apiCallBackHistory.getOperatorId());
 
                 if(apiCallBackHistory.getDescr() != null)
                     queryHistory.setDescr(apiCallBackHistory.getDescr());
@@ -997,7 +1011,7 @@ public class ChargeLogic implements ChargeService {
 
                 queryHistory.setUpdatDate(DateTimeUtil.getDateString(new Date()));
 
-//                chargeStore.updateCallbackHistory(queryHistory);
+                chargeStore.updateCallbackHistory(queryHistory);
             }
 
         }catch(Exception e) {
@@ -1006,13 +1020,13 @@ public class ChargeLogic implements ChargeService {
     }
 
     private void addContractChangeLog(Contract contract, Operator operator, String field, Object beforeValue,
-                                      Object afterValue, String type) {
+                                      Object afterValue, String type) throws Exception {
 
         // ContractChangeLog Insert
         ContractChangeLog contractChangeLog = new ContractChangeLog();
 
-        contractChangeLog.setContract(contract);
-        contractChangeLog.setCustomer(contract.getCustomer());
+        contractChangeLog.setContractId(contract.getId());
+        contractChangeLog.setCustomerId(Integer.valueOf(contract.getCustomerId()));
         contractChangeLog.setStartDatetime(DateTimeUtil.getCurrentDateTimeByFormat("yyyyMMddHHmmss"));
         contractChangeLog.setChangeField(field);
 
@@ -1037,7 +1051,7 @@ public class ChargeLogic implements ChargeService {
 
         }
 
-        contractChangeLog.setOperator(operator);
+//        contractChangeLog.setOperator(operator);
         contractChangeLog.setWriteDatetime(DateTimeUtil.getCurrentDateTimeByFormat("yyyyMMddHHmmss"));
 
         chargeStore.addContractChangeLog(contractChangeLog);
@@ -1059,7 +1073,7 @@ public class ChargeLogic implements ChargeService {
             stslog.setResultDate(stslog.getCreateDate());
             chargeStore.addSTSlog(stslog);
         } catch (Exception e) {
-//            log.error(e, e);
+            log.error(e, e);
         }
     }
 

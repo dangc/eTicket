@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Map;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,6 +26,12 @@ public class ArrearsDebt {
         this.debtType = debtType;
         this.debtRef = debtRef;
         this.paidDebtAmount = paidDebtAmount;
+    }
+
+    public ArrearsDebt(Map<String, Object> stringObjectMap) {
+        this.debtType = stringObjectMap.get("debtType").toString();
+        this.debtRef = stringObjectMap.get("debtType").toString();
+        this.paidDebtAmount = (Double) stringObjectMap.get("debtType");
     }
 
     @Override
